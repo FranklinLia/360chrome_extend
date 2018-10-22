@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="author" content="Mr.Liang">
+	<meta name="renderer" content="webkit">
+	<meta name="keywords" content="批量导入">
+	<meta name="description" content="批量导入">
+	<title>批量导入</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+	<script type="text/javascript" src="../js/layui.js"></script>
+	<script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
+	<script type="text/javascript" src="../js/muse-ui.js"></script>
+	<script type="text/javascript" src="../js/layer.js"></script>
+	<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+	<link rel="stylesheet" href="../css/layui.css">
+	<link rel="stylesheet" href="../css/layer.css">
+	<link rel="stylesheet" href="../css/msui.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+	<style>
+		.options-container{
+			width: 100%;
+			height: 100%;
+		}
+		.slider{
+			width: 100%;
+			height: 100%;
+			background: #fff;
+			padding: 20px 0;
+		}
+		.wrapper{
+			margin-left: 20%;
+			width: 60%;
+		}
+		.slider img{
+			width: 16%;
+			margin-left: 42%;
+		}
+		.slider p {
+			background: #f1f7f8;
+			height: 40px;
+			line-height: 40px;
+			margin-bottom: 20px;
+			text-indent: 20px;
+			font-size: 16px;
+		}
+		.slider p:hover{
+			background: #2F9A7F;
+			color: #fff;
+		}
+		.slider p.active{
+			border-right: 2px solid #2F9A7F;
+		}
+		.wc-bg{
+			width: 100%;
+			height: 10px;
+			border-radius: 10px;
+			position: relative;
+			background: #f5f5f5;
+		}
+		.wc-top{
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 10px;
+			border-radius: 10px;
+			background: linear-gradient(to right,rgb(255, 180, 68), #ff0000);
+		}
+		.wc-top2{
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 10px;
+			border-radius: 10px;
+			background: linear-gradient(to right,rgb(255, 180, 68), #ff0000);
+		}
+		.wrapper{
+			padding: 50px 100px;
+		}
+		.wrapper-content{
+			padding:40px 0;
+			background: #fff;
+		}
+		.wrapper-header{
+			display: flex;
+			/*border-bottom: 1px solid #2F9A7F;*/
+		}
+		.wrapper-header h1{
+			font-size: 16px;
+			color: #666;
+			padding: 10px 10px;
+			margin-right: 20px;
+			line-height: 30px;			
+		}
+		.wrapper-header h1.active{
+			font-size: 20px;
+			color: #2F9A7F;
+			background: #fff;
+			border-bottom: 1px solid #fff;
+		}
+		.wc-item{
+			display: flex;
+			align-items: center;
+			font-size: 16px;
+			padding: 0 40px;
+			background: #fff;
+		}
+		.wc-left{
+			flex: 0 0 30%;
+			padding: 10px 0;
+			margin-right: 10px;
+		}
+		.wc-left p span{
+			font-size: 14px;
+			color: #666;
+		}
+		.wc-right{
+			flex: 1;
+		}
+		.wc-right.status{
+			display: flex;
+		}
+		.wci-item{
+			position: relative;
+			margin-right: 20px;
+			display: flex;
+			align-items: center;
+		}
+		.wci-item span{
+		    position: relative;
+		    top: 0;
+		    left: 0;
+		    margin-right: 5px;
+		    display: inline-block;
+		    width: 16px;
+		    height: 16px;
+		    border: 1px solid #d7d8d9;
+		    border-radius: 50%;
+		    background-color: #fff;
+		    transition: all .3s;
+		    cursor: pointer;
+		}
+		.wci-item span:after{
+    		position: absolute;
+		    width: 8px;
+		    height: 8px;
+		    left: 3px;
+		    top: 3px;
+		    border-radius: 50%;
+		    content: "";
+		    background-color: #1abc9c;
+		    opacity: 0;
+		    transform: scale(0);
+		    transition: all .3s cubic-bezier(.78,.14,.15,.86);
+		}
+		.wci-item.active span{
+			border: 1px solid #1abc9c;
+		}
+		.wci-item.active span:after{
+			opacity: 1;
+    		transform: scale(1);
+		}
+		.wci-item.active label{
+			color: #1abc9c;
+		}
+		.wc-right input{
+			height: 30px;
+			text-indent: 10px;
+			border: 1px solid #e1e1e1;
+		}
+		.wc-right input:hover{
+			border: 1px solid #1abc9c;
+		}
+		.wc-right .count{
+			height: 30px;
+			line-height: 30px;
+		}
+		.wc-right .enter{
+			margin-left: 20px;
+			font-size: 12px;
+			height: 30px;
+			line-height: 30px;
+			padding: 0 10px;
+			background: #f5f5f5;
+			border: 1px solid #e1e1e1;
+			cursor: pointer;
+		}
+		.wc-click{
+			margin-left: 10px;
+			padding: 0 10px;
+			height: 30px;
+			line-height: 30px;
+			background: #f5f5f5;
+			border: 1px solid #e1e1e1;
+			font-size: 12px;
+			cursor: pointer;
+		}
+		.wc-click:hover{
+			background: #2F9A7F;
+			color: #fff;
+		}
+		.wc-item.sea{
+			padding: 0;
+			font-size: 14px;
+		}
+		.wc-footer{
+			margin-top: 10px;
+			padding: 0 40px;
+		}
+		.wc-footer h1{
+			padding-top: 10px;
+			font-size: 14px;
+			font-weight: bold;
+			color: #333;
+			border-top: 1px solid #1abc9c;
+			border-bottom: none;
+		}
+		.wcc{
+			margin-top: 10px;
+			background: #f5f5f5;
+		}
+		.wcc-header{
+			display: flex;
+			align-items: center;
+			height: 40px;
+			line-height: 40px;
+			text-align: center;
+			font-size: 16px;
+			border-bottom: 1px solid #e1e1e1;
+		}
+		.mainname{
+			flex: 0 0 30%;
+			border-right: 1px solid #e1e1e1;
+		}
+		.maintype{
+			flex: 1;
+			border-right: 1px solid #e1e1e1;
+		}
+		.maintime{
+			flex: 0 0 40%;
+		}
+		.wcc-items{
+			padding: 10px 0;
+			background: #b4b4b4;
+			height: 200px;
+			color: #f5f5f5;
+			overflow-y: scroll;
+		}
+		.wcc-item{
+			display: flex;
+			text-align: center;
+			padding: 5px 0;
+			font-size: 14px;
+		}
+		.wcc-item .name{
+			flex: 0 0 30%;
+			line-height: 14px;
+		}
+		.wcc-item .type{
+			flex: 1;
+		}
+		.wcc-item .time{
+			flex: 0 0 40%;
+		}
+		.wc-succ{
+			display: flex;
+			margin: 0 40px;
+			height: 30px;
+			line-height: 30px;
+			font-size: 16px;
+		}
+		.wcs-left{
+			margin-right: 20px;
+		}
+		.wcs-left span,.wcs-right span{
+			margin-left: 10px;
+			background: #f5f5f5;
+			padding: 2px 10px;
+			font-size: 14px;
+			border-radius: 4px;
+			color: #1abc9c;
+		}
+		.wc-start{
+			padding: 0 40px;
+		}
+		.wc-start p{
+			background: #f5f5f5;
+			border: 1px solid #e1e1e1;
+			width: 100px;
+			padding: 5px 0;
+			font-size: 14px;
+			text-align: center;
+		}
+		.wc-start p.active{
+			background: #2F9A7F;
+			color: #fff;
+			border: 1px solid #2F9A7F;
+		}
+	</style>
+</head>
+<body>
+	<div class="options-container" id="container">
+		<div class="slider">
+			<img src="../img/logo.png" />
+		</div>
+		<div class="wrapper">
+			<div class="wrapper-header">
+				<h1 :class="{active: isActive == 1}" @click="choose(1)">{{title}}</h1>
+				<h1 :class="{active: isActive == 2}" @click="choose(2)">批量自动创建pid</h1>
+				<h1 :class="{active: isActive == 3}" @click="choose(3)">批量导入历史生成的pid</h1>
+			</div>			
+			<div class="wrapper-content" v-show="isActive == 1">
+				<ul>
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>选择推广媒介:</p>
+						</div>
+						<div class="wc-right status">
+							<!-- <input type="radio" name="media" class="statu" value="app" checked="checked"> app
+							<input type="radio" name="media" class="statu" value="淘宝"> 淘宝
+							<input type="radio" name="media" class="statu" value="京东"> 京东 -->
+							<div class="wci-item" :class="{active: statu == 1}" @click="change(1)">
+								<span></span>
+								<label>APP</label>
+							</div>
+							<div class="wci-item" :class="{active: statu == 2}" @click="change(2)">
+								<span></span>
+								<label>淘宝</label>
+							</div>
+							<div class="wci-item" :class="{active: statu == 3}" @click="change(3)">
+								<span></span>
+								<label>京东</label>
+							</div>
+						</div>
+					</li>
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>推广位名称前缀:</p>
+						</div>
+						<div class="wc-right status">
+							<input type="text" placeholder="例如：代理" class="wc-num">
+						</div>
+					</li>
+					<li class="wc-item" style="line-height: 14px;">
+	    				<div class="wc-left">
+	    					<p>创建推广位时间间隔<span>(默认5秒，时间太短容易失败)</span></p>
+	    				</div>
+	    				<div class="wc-right">
+	    					<div id="slideTest1"></div>
+	    				</div>
+	    			</li>
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>选择你要生成的数量:</p>
+						</div>
+						<div class="wc-right status">
+							<input type="text" placeholder="请选择生成的数量" v-model.trim="num" class="wc-num">
+							<p class="wc-click" @click="build()">点击生成</p>
+						</div>
+					</li>					
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>生成进度:</p>
+						</div>
+						<div class="wc-right">
+							<div class="wc-bg">
+								<div class="wc-top" id="wc-top">
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="wc-footer">
+						<h1>生成记录</h1>
+						<div class="wcc">
+							<div class="wcc-header">
+								<p class="mainname">推广位名称</p>
+								<p class="maintype">生成状态</p>
+								<p class="maintime">生成时间</p>
+							</div>
+							<ul class="wcc-items">
+								<li class="wcc-item" v-for="(item, index) in nums">
+									<p class="name">代理</p>
+									<p class="type">创建成功</p>
+									<p class="time">2018-10-22 10：20</p>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="wrapper-content" v-show="isActive == 2">
+				<ul>
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>选择推广媒介:</p>
+						</div>
+						<div class="wc-right status">
+							<!-- <input type="radio" name="media" class="statu" value="app" checked="checked"> app
+							<input type="radio" name="media" class="statu" value="淘宝"> 淘宝
+							<input type="radio" name="media" class="statu" value="京东"> 京东 -->
+							<div class="wci-item" :class="{active: statu2 == 1}" @click="change2(1)">
+								<span></span>
+								<label>APP</label>
+							</div>
+							<div class="wci-item" :class="{active: statu2 == 2}" @click="change2(2)">
+								<span></span>
+								<label>淘宝</label>
+							</div>
+							<div class="wci-item" :class="{active: statu2 == 3}" @click="change2(3)">
+								<span></span>
+								<label>京东</label>
+							</div>
+						</div>
+					</li>
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>推广位名称前缀:</p>
+						</div>
+						<div class="wc-right status">
+							<input type="text" placeholder="例如：代理" class="wc-num">
+						</div>
+					</li>
+					<li class="wc-item">
+						<p>推广位的数量低于300时，系统会自动开始创建；高于5000时，系统会自动停止创建。</p>
+					</li>
+					<li class="wc-item" style="line-height: 14px;">
+	    				<div class="wc-left">
+	    					<p>创建推广位时间间隔<span>(默认5秒，时间太短容易失败)</span></p>
+	    				</div>
+	    				<div class="wc-right">
+	    					<div id="slideTest2"></div>
+	    				</div>
+	    			</li>
+	    			<li class="wc-start">
+						<p @click="start()" :class="{active: isStart}">{{txt}}</p>
+					</li>					
+					<li class="wc-footer">
+						<h1>生成记录</h1>
+						<div class="wcc">
+							<div class="wcc-header">
+								<p class="mainname">推广位名称</p>
+								<p class="maintype">生成状态</p>
+								<p class="maintime">生成时间</p>
+							</div>
+							<ul class="wcc-items">
+								<li class="wcc-item" v-for="(item, index) in nums">
+									<p class="name">代理代理代理代理代理代理代理</p>
+									<p class="type">创建成功</p>
+									<p class="time">2018-10-22 10：20</p>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="wrapper-content" v-show="isActive == 3">
+				<ul>
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>选择推广媒介:</p>
+						</div>
+						<div class="wc-right status">
+							<!-- <input type="radio" name="media" class="statu" value="app" checked="checked"> app
+							<input type="radio" name="media" class="statu" value="淘宝"> 淘宝
+							<input type="radio" name="media" class="statu" value="京东"> 京东 -->
+							<div class="wci-item" :class="{active: statu3 == 1}" @click="change3(1)">
+								<span></span>
+								<label>APP</label>
+							</div>
+							<div class="wci-item" :class="{active: statu3 == 2}" @click="change3(2)">
+								<span></span>
+								<label>淘宝</label>
+							</div>
+							<div class="wci-item" :class="{active: statu3 == 3}" @click="change3(3)">
+								<span></span>
+								<label>京东</label>
+							</div>
+						</div>
+					</li>
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>查询出推广位数量:</p>
+						</div>
+						<div class="wc-right status">
+							<p class="count">333</p>
+							<p class="enter" @click="enter()">一键导入</p>
+						</div>
+					</li>				
+					<li class="wc-item">
+						<div class="wc-left">
+							<p>导入进度:</p>
+						</div>
+						<div class="wc-right">
+							<div class="wc-bg">
+								<div class="wc-top2" id="wc-top2">
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="wc-succ">
+						<div class="wcs-left">
+							<p>重复数量<span>333</span></p>
+							
+						</div>
+						<div class="wcs-right">
+							<p>成功数量<span>444</span></p>							
+						</div>
+					</li>	
+					<li class="wc-footer">
+						<h1>生成记录</h1>
+						<div class="wcc">
+							<div class="wcc-header">
+								<p class="mainname">推广位名称</p>
+								<p class="maintype">生成状态</p>
+								<p class="maintime">生成时间</p>
+							</div>
+							<ul class="wcc-items">
+								<li class="wcc-item" v-for="(item, index) in nums">
+									<p class="name">代理代理代理代理代理代理代理</p>
+									<p class="type">创建成功</p>
+									<p class="time">2018-10-22 10：20</p>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+</body>
+<script>
+	var vm = new Vue({
+		el: "#container",
+		data:{
+			isChange: false,
+			title:'批量创建pid',
+			num: 1,
+			count: 1,
+			statu: 1,
+			statu2: 1,
+			statu3: 1,
+			nums: [1,2,3,4,5,6,7,8,9],
+			isActive: 2,
+			txt: '启动自动创建',
+			isStart: false,
+		},
+		watch: {
+			num: function(){
+				document.getElementById("wc-top").style.width = this.num + "%";
+			},
+			count: function(){
+				document.getElementById("wc-top2").style.width = this.count+ "%";
+			}
+		},
+		mounted(){
+			document.getElementById("wc-top").style.width = this.num + "%";
+			// var tempObject = setInterval(() => {
+			// 	this.num ++;
+			// 	if (this.num > 59) {
+			// 		clearInterval(tempObject)
+			// 	}
+			// },100) 
+			var el_height = $('.wcc-items')[0].scrollHeight;
+			$('.wcc-items')[0].scrollTop = el_height
+		},
+		methods: {
+			change: function(id){
+				this.statu = id;
+			},
+			change2: function(id){
+				this.statu2 = id;
+			},
+			change3: function(id){
+				this.statu3= id;
+			},
+			start: function(){
+				if (this.txt == '启动自动创建') {
+					this.txt = '关闭自动创建';
+					this.isStart = true;
+				}else if (this.txt == '关闭自动创建'){
+					this.txt = '启动自动创建';
+					this.isStart = false;
+				}
+			},
+			build: function(){
+
+				this.nums.push('33');
+				var el_height = $('.wcc-items')[0].scrollHeight;
+				console.log(el_height);
+				$('.wcc-items')[0].scrollTop = el_height;				
+			},
+			choose: function(id){
+				this.isActive = id;
+				var el_height = $('.wcc-items')[0].scrollHeight;
+				$('.wcc-items')[0].scrollTop = el_height
+			},
+			enter: function(){
+				var tempObject = setInterval(() => {
+					this.count ++;
+					if (this.count > 59) {
+						clearInterval(tempObject)
+					}
+				},100) 
+			}
+		}
+	})
+	layui.use('slider', function(){
+	  var slider = layui.slider;
+	  
+	  //渲染
+	  slider.render({
+	    elem: '#slideTest1',
+	    min: 0,
+	    max: 10,
+	    value: vm.num,
+	    change: function(value){
+	    	console.log(value)
+	    	vm.num = value;
+	    }
+	  });
+	  slider.render({
+	    elem: '#slideTest2',
+	    min: 0,
+	    max: 10,
+	    value: vm.num,
+	    change: function(value){
+	    	console.log(value)
+	    	vm.num = value;
+	    }
+	  });
+	  slider.render({
+	    elem: '#slideTest3',
+	    min: 0,
+	    max: 10,
+	    value: vm.num,
+	    change: function(value){
+	    	console.log(value)
+	    	vm.num = value;
+	    }
+	  });
+	});
+</script>
+</html>

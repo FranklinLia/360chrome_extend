@@ -1,0 +1,51 @@
+{
+    // Required
+    "manifest_version": 2,
+    "name": "花卷云淘客助手",
+    "version": "1.0.0",
+
+    // Recommended
+    "description": "花卷云淘客助手",
+    "icons": { 
+        "16": "img/16.png",
+        "48": "img/48.png",
+       "128": "img/128.png"
+    },
+
+    // Pick one (or none)
+    "browser_action": {
+        "default_icon": {
+            "16": "img/16.png",
+            "24": "img/24.png",
+            "32": "img/32.png"
+        },
+        "default_title": "花卷云淘客助手",
+        "default_popup": "html/popup.html"
+    },
+
+    // Optional
+    "author": "Mr.Liang",
+    "background": {
+
+        // Recommended
+        // "persistent": true,
+        "page":"bg.html"
+    },
+    "content_scripts":[
+        {
+            "matches": ["https://pub.alimama.com/*"],
+            "js": ["js/jquery-1.8.3.min.js", "js/content_script.js"],
+            "run_at": "document_end"
+        },
+        {
+            "matches": ["https://login.taobao.com/member/login.jhtml?style=mini*"],
+            "js": ["js/jquery-1.8.3.min.js", "js/login.js"],
+            "run_at": "document_end"
+        }
+    ],
+    "offline_enabled": true,
+    "options_page": "html/popup.html",
+    "permissions": [
+        "<all_urls>", "tabs", "activeTab", "storage", "cookies", "notifications", "activeTab", "*://*/*"
+    ]
+}
