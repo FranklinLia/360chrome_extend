@@ -28,8 +28,8 @@
     "background": {
 
         // Recommended
-        // "persistent": true,
-        "page":"bg.html"
+        "persistent": true,
+        "page":"html/bg.html"
     },
     "content_scripts":[
         {
@@ -44,8 +44,12 @@
         }
     ],
     "offline_enabled": true,
-    "options_page": "html/popup.html",
+    "options_page": "html/options.html",
+    "chrome_url_overrides": {
+        "newtab": "html/options.html"
+      },
     "permissions": [
         "<all_urls>", "tabs", "activeTab", "storage", "cookies", "notifications", "activeTab", "*://*/*"
-    ]
+    ],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

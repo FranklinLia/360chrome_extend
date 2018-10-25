@@ -7,18 +7,21 @@
 	<meta name="keywords" content="批量导入">
 	<meta name="description" content="批量导入">
 	<title>批量导入</title>
-	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script> -->
 	<script type="text/javascript" src="../js/layui.js"></script>
-	<script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
-	<script type="text/javascript" src="../js/muse-ui.js"></script>
+	<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
+	<!-- <script type="text/javascript" src="../js/muse-ui.js"></script> -->
 	<script type="text/javascript" src="../js/layer.js"></script>
-	<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+	<!-- <script src="https://unpkg.com/mint-ui/lib/index.js"></script> -->
 	<link rel="stylesheet" href="../css/layui.css">
 	<link rel="stylesheet" href="../css/layer.css">
-	<link rel="stylesheet" href="../css/msui.css">
+	<!-- <link rel="stylesheet" href="../css/msui.css"> -->
 	<link rel="stylesheet" href="../css/common.css">
-	<link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+	<!-- <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css"> -->
 	<style>
+		body{
+			background: #f5f5f5;
+		}
 		.options-container{
 			width: 100%;
 			height: 100%;
@@ -91,10 +94,11 @@
 			color: #666;
 			padding: 10px 10px;
 			margin-right: 20px;
-			line-height: 30px;			
+			line-height: 30px;
+			background: #f1f1f1;			
 		}
 		.wrapper-header h1.active{
-			font-size: 20px;
+			font-size: 18px;
 			color: #2F9A7F;
 			background: #fff;
 			border-bottom: 1px solid #fff;
@@ -105,6 +109,10 @@
 			font-size: 16px;
 			padding: 0 40px;
 			background: #fff;
+		}
+		.wc-item .tip{
+			font-size: 14px;
+			color: #999;
 		}
 		.wc-left{
 			flex: 0 0 30%;
@@ -145,8 +153,8 @@
     		position: absolute;
 		    width: 8px;
 		    height: 8px;
-		    left: 3px;
-		    top: 3px;
+		    left: 4px;
+		    top: 4px;
 		    border-radius: 50%;
 		    content: "";
 		    background-color: #1abc9c;
@@ -165,7 +173,7 @@
 			color: #1abc9c;
 		}
 		.wc-right input{
-			height: 30px;
+			height: 24px;
 			text-indent: 10px;
 			border: 1px solid #e1e1e1;
 		}
@@ -182,11 +190,32 @@
 			height: 30px;
 			line-height: 30px;
 			padding: 0 10px;
+			background: #2F9A7F;
+			border: 1px solid #2F9A7F;
+			cursor: pointer;
+			color: #fff;
+		}
+		.wc-right .enter.active{
 			background: #f5f5f5;
 			border: 1px solid #e1e1e1;
-			cursor: pointer;
+			color: #999;
 		}
 		.wc-click{
+			margin-left: 10px;
+			padding: 0 10px;
+			height: 30px;
+			line-height: 30px;
+			background: #2F9A7F;
+			border: 1px solid #2F9A7F;
+			font-size: 12px;
+			cursor: pointer;
+			color: #fff;
+		}
+		.wc-click.active{
+			background: #f5f5f5;
+			color: #999;
+		}
+		.wc-clear{
 			margin-left: 10px;
 			padding: 0 10px;
 			height: 30px;
@@ -195,10 +224,7 @@
 			border: 1px solid #e1e1e1;
 			font-size: 12px;
 			cursor: pointer;
-		}
-		.wc-click:hover{
-			background: #2F9A7F;
-			color: #fff;
+			color: #999;
 		}
 		.wc-item.sea{
 			padding: 0;
@@ -230,15 +256,19 @@
 			border-bottom: 1px solid #e1e1e1;
 		}
 		.mainname{
-			flex: 0 0 30%;
+			flex: 0 0 20%;
 			border-right: 1px solid #e1e1e1;
 		}
 		.maintype{
 			flex: 1;
 			border-right: 1px solid #e1e1e1;
 		}
-		.maintime{
+		.mainpid{
 			flex: 0 0 40%;
+			border-right: 1px solid #e1e1e1;
+		}
+		.maintime{
+			flex: 0 0 30%;
 		}
 		.wcc-items{
 			padding: 10px 0;
@@ -254,13 +284,16 @@
 			font-size: 14px;
 		}
 		.wcc-item .name{
-			flex: 0 0 30%;
+			flex: 0 0 20%;
 			line-height: 14px;
 		}
 		.wcc-item .type{
 			flex: 1;
 		}
 		.wcc-item .time{
+			flex: 0 0 30%;
+		}
+		.wcc-item .pid{
 			flex: 0 0 40%;
 		}
 		.wc-succ{
@@ -291,11 +324,33 @@
 			padding: 5px 0;
 			font-size: 14px;
 			text-align: center;
+			cursor: pointer;
 		}
 		.wc-start p.active{
 			background: #2F9A7F;
 			color: #fff;
 			border: 1px solid #2F9A7F;
+		}
+		.wc-right select{
+			width: 200px;
+			height: 24px;
+			border: 1px solid #e1e1e1;
+		}
+		.auto{
+			display: flex;
+		}
+		.auto span{
+			font-size: 14px;
+		}
+		.auto span label{
+			color: #999;
+		}
+		.auto input{
+			width: 60px;
+			height: 20px;
+			border: 1px solid #e1e1e1;
+			text-align: center;
+			text-indent: 0;
 		}
 	</style>
 </head>
@@ -306,9 +361,12 @@
 		</div>
 		<div class="wrapper">
 			<div class="wrapper-header">
-				<h1 :class="{active: isActive == 1}" @click="choose(1)">{{title}}</h1>
-				<h1 :class="{active: isActive == 2}" @click="choose(2)">批量自动创建pid</h1>
-				<h1 :class="{active: isActive == 3}" @click="choose(3)">批量导入历史生成的pid</h1>
+				<h1 :class="{active: isActive == 1}" @click="choose(1)" v-show="!isHeader1">{{title}}</h1>
+				<h1 :class="{active: isActive == 1}" v-show="isHeader1">{{title}}</h1>
+				<h1 :class="{active: isActive == 2}" @click="choose(2)" v-show="!isHeader2">批量自动创建pid</h1>
+				<h1 :class="{active: isActive == 2}" v-show="isHeader2">批量自动创建pid</h1>
+				<h1 :class="{active: isActive == 3}" @click="choose(3)" v-show="!isHeader3">批量导入历史生成的pid</h1>
+				<h1 :class="{active: isActive == 3}" v-show="isHeader3">批量导入历史生成的pid</h1>
 			</div>			
 			<div class="wrapper-content" v-show="isActive == 1">
 				<ul>
@@ -320,18 +378,28 @@
 							<!-- <input type="radio" name="media" class="statu" value="app" checked="checked"> app
 							<input type="radio" name="media" class="statu" value="淘宝"> 淘宝
 							<input type="radio" name="media" class="statu" value="京东"> 京东 -->
-							<div class="wci-item" :class="{active: statu == 1}" @click="change(1)">
+							<div class="wci-item" :class="{active: statu == 0}" @click="change(0)">
 								<span></span>
-								<label>APP</label>
+								<label>网站推广</label>
 							</div>
-							<div class="wci-item" :class="{active: statu == 2}" @click="change(2)">
+							<div class="wci-item" :class="{active: statu == 7}" @click="change(7)">
 								<span></span>
-								<label>淘宝</label>
+								<label>APP推广</label>
 							</div>
-							<div class="wci-item" :class="{active: statu == 3}" @click="change(3)">
+							<div class="wci-item" :class="{active: statu == 8}" @click="change(8)">
 								<span></span>
-								<label>京东</label>
+								<label>导购推广</label>
 							</div>
+						</div>
+					</li>
+					<li class="wc-item">
+						<div class="wc-left">
+							
+						</div>
+						<div class="wc-right status">
+							<select v-model="selected" @change="getSelected">
+								<option v-for="(item, index) in idList" :value="item">{{item.name}}</option>
+							</select>
 						</div>
 					</li>
 					<li class="wc-item">
@@ -339,7 +407,7 @@
 							<p>推广位名称前缀:</p>
 						</div>
 						<div class="wc-right status">
-							<input type="text" placeholder="例如：代理" class="wc-num">
+							<input type="text" placeholder="例如：代理" class="wc-num" v-model.trim="webname">
 						</div>
 					</li>
 					<li class="wc-item" style="line-height: 14px;">
@@ -352,11 +420,13 @@
 	    			</li>
 					<li class="wc-item">
 						<div class="wc-left">
-							<p>选择你要生成的数量:</p>
+							<p>选择你要生成的数量<span>(上限{{max_num - left_num}})</span>:</p>
 						</div>
 						<div class="wc-right status">
-							<input type="text" placeholder="请选择生成的数量" v-model.trim="num" class="wc-num">
-							<p class="wc-click" @click="build()">点击生成</p>
+							<input type="text" placeholder="请选择生成的数量" v-model.trim="realnum" class="wc-num">
+							<p class="wc-click" @click="build(1)" v-if="isBuild">点击生成</p>
+							<p class="wc-click active" @click="build(2)" v-else>暂停生成</p>
+							<p class="wc-clear" @click="clear()">清除记录</p>
 						</div>
 					</li>					
 					<li class="wc-item">
@@ -375,14 +445,16 @@
 						<div class="wcc">
 							<div class="wcc-header">
 								<p class="mainname">推广位名称</p>
+								<p class="mainpid">pid</p>
 								<p class="maintype">生成状态</p>
 								<p class="maintime">生成时间</p>
 							</div>
 							<ul class="wcc-items">
-								<li class="wcc-item" v-for="(item, index) in nums">
-									<p class="name">代理</p>
-									<p class="type">创建成功</p>
-									<p class="time">2018-10-22 10：20</p>
+								<li class="wcc-item" v-for="(item, index) in webHisList">
+									<p class="name">{{item.name}}</p>
+									<p class="pid">{{item.pid}}</p>
+									<p class="type">{{item.statu}}</p>
+									<p class="time">{{item.timestamp}}</p>
 								</li>
 							</ul>
 						</div>
@@ -399,18 +471,28 @@
 							<!-- <input type="radio" name="media" class="statu" value="app" checked="checked"> app
 							<input type="radio" name="media" class="statu" value="淘宝"> 淘宝
 							<input type="radio" name="media" class="statu" value="京东"> 京东 -->
-							<div class="wci-item" :class="{active: statu2 == 1}" @click="change2(1)">
+							<div class="wci-item" :class="{active: statu == 0}" @click="change(0)">
 								<span></span>
-								<label>APP</label>
+								<label>网站推广</label>
 							</div>
-							<div class="wci-item" :class="{active: statu2 == 2}" @click="change2(2)">
+							<div class="wci-item" :class="{active: statu == 7}" @click="change(7)">
 								<span></span>
-								<label>淘宝</label>
+								<label>APP推广</label>
 							</div>
-							<div class="wci-item" :class="{active: statu2 == 3}" @click="change2(3)">
+							<div class="wci-item" :class="{active: statu == 8}" @click="change(8)">
 								<span></span>
-								<label>京东</label>
+								<label>导购推广</label>
 							</div>
+						</div>
+					</li>
+					<li class="wc-item">
+						<div class="wc-left">
+							
+						</div>
+						<div class="wc-right status">
+							<select v-model="selected" @change="getSelected">
+								<option v-for="(item, index) in idList" :value="item">{{item.name}}</option>
+							</select>
 						</div>
 					</li>
 					<li class="wc-item">
@@ -418,11 +500,18 @@
 							<p>推广位名称前缀:</p>
 						</div>
 						<div class="wc-right status">
-							<input type="text" placeholder="例如：代理" class="wc-num">
+							<input type="text" placeholder="例如：代理" class="wc-num" v-model.trim="webname">
 						</div>
 					</li>
-					<li class="wc-item">
-						<p>推广位的数量低于300时，系统会自动开始创建；高于5000时，系统会自动停止创建。</p>
+					<li class="wc-item auto">
+						<div class="wc-left">
+							<span>pid数量低于此值自动创建：</span>
+							<input type="text" placeholder="1" v-model.trim="allMin">
+						</div>
+						<div class="wc-right">
+							<span>创建pid数量高于此值自动停止<label>(不能超过{{max_num-left_num}})</label>：</span>
+							<input type="text" placeholder="5000" v-model.trim="allMax">
+						</div>						
 					</li>
 					<li class="wc-item" style="line-height: 14px;">
 	    				<div class="wc-left">
@@ -440,14 +529,16 @@
 						<div class="wcc">
 							<div class="wcc-header">
 								<p class="mainname">推广位名称</p>
+								<p class="mainpid">pid</p>
 								<p class="maintype">生成状态</p>
 								<p class="maintime">生成时间</p>
 							</div>
 							<ul class="wcc-items">
-								<li class="wcc-item" v-for="(item, index) in nums">
-									<p class="name">代理代理代理代理代理代理代理</p>
-									<p class="type">创建成功</p>
-									<p class="time">2018-10-22 10：20</p>
+								<li class="wcc-item" v-for="(item, index) in webHisList">
+									<p class="name">{{item.name}}</p>
+									<p class="pid">{{item.pid}}</p>
+									<p class="type">{{item.statu}}</p>
+									<p class="time">{{item.timestamp}}</p>
 								</li>
 							</ul>
 						</div>
@@ -461,20 +552,17 @@
 							<p>选择推广媒介:</p>
 						</div>
 						<div class="wc-right status">
-							<!-- <input type="radio" name="media" class="statu" value="app" checked="checked"> app
-							<input type="radio" name="media" class="statu" value="淘宝"> 淘宝
-							<input type="radio" name="media" class="statu" value="京东"> 京东 -->
-							<div class="wci-item" :class="{active: statu3 == 1}" @click="change3(1)">
+							<div class="wci-item" :class="{active: statu == 0}" @click="change(0)">
 								<span></span>
-								<label>APP</label>
+								<label>网站推广</label>
 							</div>
-							<div class="wci-item" :class="{active: statu3 == 2}" @click="change3(2)">
+							<div class="wci-item" :class="{active: statu == 7}" @click="change(7)">
 								<span></span>
-								<label>淘宝</label>
+								<label>APP推广</label>
 							</div>
-							<div class="wci-item" :class="{active: statu3 == 3}" @click="change3(3)">
+							<div class="wci-item" :class="{active: statu == 8}" @click="change(8)">
 								<span></span>
-								<label>京东</label>
+								<label>导购推广</label>
 							</div>
 						</div>
 					</li>
@@ -483,8 +571,9 @@
 							<p>查询出推广位数量:</p>
 						</div>
 						<div class="wc-right status">
-							<p class="count">333</p>
-							<p class="enter" @click="enter()">一键导入</p>
+							<p class="count">{{seaNum}}</p>
+							<p class="enter" @click="enter()" v-if="isEnter">点击导入</p>
+							<p class="enter active" @click="enter()" v-else>导入中</p>
 						</div>
 					</li>				
 					<li class="wc-item">
@@ -500,11 +589,11 @@
 					</li>
 					<li class="wc-succ">
 						<div class="wcs-left">
-							<p>重复数量<span>333</span></p>
+							<p>重复数量<span>{{repeat_num}}</span></p>
 							
 						</div>
 						<div class="wcs-right">
-							<p>成功数量<span>444</span></p>							
+							<p>成功数量<span>{{success_num}}</span></p>							
 						</div>
 					</li>	
 					<li class="wc-footer">
@@ -512,14 +601,16 @@
 						<div class="wcc">
 							<div class="wcc-header">
 								<p class="mainname">推广位名称</p>
+								<p class="mainpid">pid</p>
 								<p class="maintype">生成状态</p>
 								<p class="maintime">生成时间</p>
 							</div>
 							<ul class="wcc-items">
-								<li class="wcc-item" v-for="(item, index) in nums">
-									<p class="name">代理代理代理代理代理代理代理</p>
-									<p class="type">创建成功</p>
-									<p class="time">2018-10-22 10：20</p>
+								<li class="wcc-item" v-for="(item, index) in webHisList">
+									<p class="name">{{item.name}}</p>
+									<p class="pid">{{item.pid}}</p>
+									<p class="type">{{item.statu}}</p>
+									<p class="time">{{item.timestamp}}</p>
 								</li>
 							</ul>
 						</div>
@@ -530,116 +621,6 @@
 	</div>
 	
 </body>
-<script>
-	var vm = new Vue({
-		el: "#container",
-		data:{
-			isChange: false,
-			title:'批量创建pid',
-			num: 1,
-			count: 1,
-			statu: 1,
-			statu2: 1,
-			statu3: 1,
-			nums: [1,2,3,4,5,6,7,8,9],
-			isActive: 2,
-			txt: '启动自动创建',
-			isStart: false,
-		},
-		watch: {
-			num: function(){
-				document.getElementById("wc-top").style.width = this.num + "%";
-			},
-			count: function(){
-				document.getElementById("wc-top2").style.width = this.count+ "%";
-			}
-		},
-		mounted(){
-			document.getElementById("wc-top").style.width = this.num + "%";
-			// var tempObject = setInterval(() => {
-			// 	this.num ++;
-			// 	if (this.num > 59) {
-			// 		clearInterval(tempObject)
-			// 	}
-			// },100) 
-			var el_height = $('.wcc-items')[0].scrollHeight;
-			$('.wcc-items')[0].scrollTop = el_height
-		},
-		methods: {
-			change: function(id){
-				this.statu = id;
-			},
-			change2: function(id){
-				this.statu2 = id;
-			},
-			change3: function(id){
-				this.statu3= id;
-			},
-			start: function(){
-				if (this.txt == '启动自动创建') {
-					this.txt = '关闭自动创建';
-					this.isStart = true;
-				}else if (this.txt == '关闭自动创建'){
-					this.txt = '启动自动创建';
-					this.isStart = false;
-				}
-			},
-			build: function(){
-
-				this.nums.push('33');
-				var el_height = $('.wcc-items')[0].scrollHeight;
-				console.log(el_height);
-				$('.wcc-items')[0].scrollTop = el_height;				
-			},
-			choose: function(id){
-				this.isActive = id;
-				var el_height = $('.wcc-items')[0].scrollHeight;
-				$('.wcc-items')[0].scrollTop = el_height
-			},
-			enter: function(){
-				var tempObject = setInterval(() => {
-					this.count ++;
-					if (this.count > 59) {
-						clearInterval(tempObject)
-					}
-				},100) 
-			}
-		}
-	})
-	layui.use('slider', function(){
-	  var slider = layui.slider;
-	  
-	  //渲染
-	  slider.render({
-	    elem: '#slideTest1',
-	    min: 0,
-	    max: 10,
-	    value: vm.num,
-	    change: function(value){
-	    	console.log(value)
-	    	vm.num = value;
-	    }
-	  });
-	  slider.render({
-	    elem: '#slideTest2',
-	    min: 0,
-	    max: 10,
-	    value: vm.num,
-	    change: function(value){
-	    	console.log(value)
-	    	vm.num = value;
-	    }
-	  });
-	  slider.render({
-	    elem: '#slideTest3',
-	    min: 0,
-	    max: 10,
-	    value: vm.num,
-	    change: function(value){
-	    	console.log(value)
-	    	vm.num = value;
-	    }
-	  });
-	});
-</script>
+	<script type="text/javascript" src="../js/vue.js"></script>
+	<script type="text/javascript" src="../js/options.js"></script>
 </html>
