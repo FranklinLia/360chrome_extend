@@ -242,6 +242,7 @@ var vm = new Vue({
 		},
 		start2: function(){
 			var self = this;
+			layer.msg("已结束")
 			clearTimeout(self.timesJ);
 			self.isStart = false;
 			self.isHeader1 = false;
@@ -352,6 +353,7 @@ var vm = new Vue({
 			var self = this;
 			clearTimeout(self.timesJ);
 			self.isBuild = true;
+			layer.msg("已结束")
 		},
 		choose: function(id){
 			var self = this;
