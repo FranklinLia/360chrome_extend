@@ -425,7 +425,7 @@
 						<div class="wc-right status">
 							<input type="text" placeholder="请选择生成的数量" v-model.trim="realnum" class="wc-num">
 							<p class="wc-click" @click="build(1)" v-if="isBuild">点击生成</p>
-							<p class="wc-click active" @click="build(2)" v-else>暂停生成</p>
+							<p class="wc-click active" @click="build2()" v-else>暂停生成</p>
 							<p class="wc-clear" @click="clear()">清除记录</p>
 						</div>
 					</li>					
@@ -522,7 +522,8 @@
 	    				</div>
 	    			</li>
 	    			<li class="wc-start">
-						<p @click="start()" :class="{active: isStart}">{{txt}}</p>
+						<p @click="start()" v-if="!isStart" :class="{active: !isStart}">自动批量创建</p>
+						<p @click="start2()" v-else>暂停自动创建</p>
 					</li>					
 					<li class="wc-footer">
 						<h1>生成记录</h1>
