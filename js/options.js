@@ -143,7 +143,16 @@ var vm = new Vue({
         	goenter();
         	function goenter(){
         		$.get("https://pub.alimama.com/common/adzone/adzoneManage.json?&tab=1&toPage="+self.page+"&perPageSize=40&gcid="+self.gcid+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(ret,status){
-					if (ret.ok) {
+        			if (ret.constructor == String) {
+						chrome.windows.create({
+			                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+			                width:400,
+			                height:400,
+			                left:600,
+			                top:400,
+			                type:'popup'	                
+			            });            
+					}else if (ret.ok) {
 						self.seaNum = ret.data.paginator.items;								
 					}
 			    });
@@ -230,6 +239,8 @@ var vm = new Vue({
 					        genpid(i);     
 					    }, self.num*1000);
 					}
+				}else{
+					layer.msg("请输入合适的值，然后再创建")
 				}
 			}else if (self.txt == '关闭自动创建'){
 				self.txt = '启动自动创建';
@@ -364,8 +375,16 @@ var vm = new Vue({
 			goenter();
 			function goenter(){
         		$.get("https://pub.alimama.com/common/adzone/adzoneManage.json?&tab=1&toPage="+self.page+"&perPageSize=40&gcid="+self.gcid+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(ret,status){
-        			console.log(ret)
-					if (ret.ok) {
+        			if (ret.constructor == String) {
+						chrome.windows.create({
+			                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+			                width:400,
+			                height:400,
+			                left:600,
+			                top:400,
+			                type:'popup'	                
+			            });	            
+					}else if (ret.ok) {
 						var pagelist = ret.data.pagelist;
 						if (pagelist != null) {
 							$.each(ret.data.pagelist,function (index, item) {
