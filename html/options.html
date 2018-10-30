@@ -33,7 +33,7 @@
 			padding: 20px 0;
 		}
 		.wrapper{
-			margin-left: 20%;
+			margin-left: 15%;
 			width: 60%;
 		}
 		.slider img{
@@ -79,7 +79,7 @@
 			background: linear-gradient(to right,rgb(255, 180, 68), #ff0000);
 		}
 		.wrapper{
-			padding: 50px 100px;
+			padding: 50px 5%;
 		}
 		.wrapper-content{
 			padding:40px 0;
@@ -87,7 +87,6 @@
 		}
 		.wrapper-header{
 			display: flex;
-			/*border-bottom: 1px solid #2F9A7F;*/
 		}
 		.wrapper-header h1{
 			font-size: 16px;
@@ -95,7 +94,8 @@
 			padding: 10px 10px;
 			margin-right: 20px;
 			line-height: 30px;
-			background: #f1f1f1;			
+			background: #f1f1f1;
+			cursor: pointer;		
 		}
 		.wrapper-header h1.active{
 			font-size: 18px;
@@ -273,6 +273,7 @@
 		}
 		.wcc-items{
 			padding: 10px 0;
+			padding-bottom: 30px;
 			background: #b4b4b4;
 			height: 200px;
 			color: #f5f5f5;
@@ -510,7 +511,7 @@
 							<input type="text" placeholder="1" v-model.trim="allMin">
 						</div>
 						<div class="wc-right">
-							<span>创建pid数量高于此值自动停止<label>(不能超过{{max_num-left_num}})</label>：</span>
+							<span>创建pid数量高于此值自动停止<label>(不能超过{{max_num}})</label>：</span>
 							<input type="text" placeholder="5000" v-model.trim="allMax">
 						</div>						
 					</li>

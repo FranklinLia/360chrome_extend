@@ -46,6 +46,7 @@ var vm = new Vue({
 	        	self.memberid = ret.data.memberid;
 	        	chrome.storage.local.set({'name': self.name});
 	        	chrome.storage.local.set({'memberid': self.memberid});
+	        	localStorage.setItem("memberid", self.memberid);
 	            layer.msg('hello');
 	            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
 	                console.log(cookie.value);
@@ -71,6 +72,27 @@ var vm = new Vue({
 				self.token = item.token
 			}
 		});
+	},
+	mounted(){
+		var self = this;
+		if (localStorage.getItem("url")) {
+			self.url = localStorage.getItem("url");
+			self.key = localStorage.getItem("key");
+			self.memberid = localStorage.getItem("memberid");
+		}
+	    $.post(self.url,{api:'pidinfo', key: self.key, memberid: self.memberid},function(res,status){
+	    	console.log(self.key)
+	    	console.log(self.url)
+	    	console.log(self.memberid)
+			console.log(typeof res);
+			var ret = JSON.parse(res);
+			console.log(ret);
+			if (ret.code == 1) {
+				self.sum = ret.left_num;
+		        chrome.storage.local.set({"max_num": ret.max_num});
+		        chrome.storage.local.set({"sum": ret.left_num});
+			}						        
+	    });
 	},
 	methods: {
 		open: function(){
@@ -130,12 +152,14 @@ var vm = new Vue({
 			
 			if (self.url != '') {
 				chrome.storage.local.set({"url": self.url});
+				localStorage.setItem("url", self.url);
 			}else{
 				layer.msg("请输入接口地址");
 				return false;
 			}
 			if (self.key != '') {
 				chrome.storage.local.set({"key": self.key});
+				localStorage.setItem("key", self.key);
 			}else{
 				layer.msg("请输入密钥");
 				return false;

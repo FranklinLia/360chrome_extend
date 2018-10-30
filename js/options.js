@@ -56,7 +56,7 @@ var vm = new Vue({
 	},
 	mounted(){
 		var self = this;
-		chrome.storage.local.get(["max_num", "sum", "memberid", "webname", "webHisList", "url", "key", "allMin", "allMax"],function(item){
+		chrome.storage.local.get(["max_num", "sum", "memberid", "webname", "webHisList", "url", "key", "allMin", "allMax", "startNum"],function(item){
 			if (item) {
 				self.max_num = item.max_num
 				self.left_num = item.sum
@@ -66,6 +66,9 @@ var vm = new Vue({
 				self.key = item.key
 				self.allMin = item.allMin
 				self.allMax = item.allMax
+				if (item.startNum!=undefined && item.startNum) {
+					self.startNum = item.startNum
+				}				
 				console.log(item)
 				if (item.webHisList != undefined && item.webHisList.length > 0) {
 					self.webHisList = item.webHisList
@@ -86,7 +89,7 @@ var vm = new Vue({
 	            });
 			}
 		});	
-		document.getElementById("wc-top").style.width = self.numIng*100 + "%";
+		// document.getElementById("wc-top").style.width = self.numIng*100 + "%";
 		var el_height = $('.wcc-items')[0].scrollHeight;
 		$('.wcc-items')[0].scrollTop = el_height;
 		$.get("https://pub.alimama.com/common/adzone/newSelfAdzone2.json?tag="+self.tag+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(res,status){
@@ -167,12 +170,14 @@ var vm = new Vue({
 			var max = self.allMax;
 			var mid = self.allMin;
 			var min = self.left_num;
-			var i = 1;
+			var i = mid;
 			chrome.storage.local.set({"allMin": self.allMin});
 			chrome.storage.local.set({"allMax": self.allMax});			
 			chrome.storage.local.set({"webname": self.webname});
 			console.log(mid+min+max+self.max_num)
-			if ( mid > min && max <= (self.max_num-self.left_num)) {
+			if ( max < mid ) {
+				layer.msg("请输入合理的创建区间")
+			}else if ( mid > min && max < self.max_num) {
 				console.log(1111)
 				genpid(i)
 				function genpid(i) {
@@ -195,7 +200,9 @@ var vm = new Vue({
 				    var second = newDate.getSeconds();
 				    second = second < 10 ? "0" + second : second;
 				    timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minute + ":" + second;
-				    var name = self.webname + stamp+"_"+i;
+				    self.startNum ++;
+				    chrome.storage.local.set({"startNum": self.startNum});
+				    var name = self.webname + stamp+"_"+self.startNum;
 				    var data = {
 				        'siteid':self.siteid,  // 媒体id
 				        'gcid': self.gcid,   // 0 网站推广，7 APP推广，  8导购推广
@@ -205,7 +212,6 @@ var vm = new Vue({
 				        '_tb_token_':self.token,
 				        'pvid':self.pvid,
 				    };
-				    console.log(data);
 				    $.post("https://pub.alimama.com/common/adzone/selfAdzoneCreate.json",
 				        data
 				        ,function(ret,status){
@@ -265,7 +271,7 @@ var vm = new Vue({
 			var max = self.max_num;
 			var mid = self.realnum;
 			var min = self.left_num;
-			var i = self.startNum;
+			var i = 1;
 			chrome.storage.local.set({"webname": self.webname});
 			if (id == 1) {
 				self.isBuild = false;
@@ -274,48 +280,44 @@ var vm = new Vue({
 					function genpid(i) {
 						var all = parseInt(mid) +1;
 						if (i < all) {
-				        	console.log(all)				        							        	
-				        }else{
-				        	clearTimeout(times)
-				        	return false;
-				        }
-					    var timestamp = Date.parse( new Date()).toString();
-					    stamp = timestamp.substring(0,10);
-					    var obj = stamp;
-					    var newDate = new Date();
-					    newDate.setTime(obj * 1000);
+				        	var timestamp = Date.parse( new Date()).toString();
+						    stamp = timestamp.substring(0,10);
+						    var obj = stamp;
+						    var newDate = new Date();
+						    newDate.setTime(obj * 1000);
 
-					    var year = newDate.getFullYear();
-					    var month = newDate.getMonth() + 1;
-					    month = month < 10 ? "0" + month : month;
-					    var date = newDate.getDate();
-					    date = date < 10 ? "0" + date : date;
+						    var year = newDate.getFullYear();
+						    var month = newDate.getMonth() + 1;
+						    month = month < 10 ? "0" + month : month;
+						    var date = newDate.getDate();
+						    date = date < 10 ? "0" + date : date;
 
-					    var hours = newDate.getHours();
-					    hours = hours < 10 ? "0" + hours : hours;
-					    var minute = newDate.getMinutes();
-					    minute = minute < 10 ? "0" + minute : minute;
-					    var second = newDate.getSeconds();
-					    second = second < 10 ? "0" + second : second;
-					    timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minute + ":" + second;
-					    var name = self.webname + stamp+"_"+self.startNum;
-					    var data = {
-					        'siteid':self.siteid,  // 媒体id
-					        'gcid': self.gcid,   // 0 网站推广，7 APP推广，  8导购推广
-					        'tag': self.tag,
-					        'selectact':'add',
-					        'newadzonename':name,
-					        '_tb_token_':self.token,
-					        'pvid':self.pvid,
-					    };
-					    console.log(data);
-					    $.post("https://pub.alimama.com/common/adzone/selfAdzoneCreate.json",
-					        data
-					        ,function(ret,status){
-					            console.log(ret);
-					            console.log(status);
-					            if (ret.ok) {
-					            	if (i < all-1) {
+						    var hours = newDate.getHours();
+						    hours = hours < 10 ? "0" + hours : hours;
+						    var minute = newDate.getMinutes();
+						    minute = minute < 10 ? "0" + minute : minute;
+						    var second = newDate.getSeconds();
+						    second = second < 10 ? "0" + second : second;
+						    timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minute + ":" + second;
+						    self.startNum++;
+						    chrome.storage.local.set({"startNum": self.startNum});
+						    var name = self.webname + stamp+"_"+self.startNum;
+						    var data = {
+						        'siteid':self.siteid,  // 媒体id
+						        'gcid': self.gcid,   // 0 网站推广，7 APP推广，  8导购推广
+						        'tag': self.tag,
+						        'selectact':'add',
+						        'newadzonename':name,
+						        '_tb_token_':self.token,
+						        'pvid':self.pvid,
+						    };
+						    console.log(data);
+						    $.post("https://pub.alimama.com/common/adzone/selfAdzoneCreate.json",
+						        data
+						        ,function(ret,status){
+						            console.log(ret);
+						            console.log(status);
+						            if (ret.ok) {
 							        	self.isHeader2 = true;
 										self.isHeader3 = true;
 						            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
@@ -328,21 +330,22 @@ var vm = new Vue({
 							        	console.log(self.numIng);
 						            	var el_height = $('.wcc-items')[0].scrollHeight;
 										$('.wcc-items')[0].scrollTop = el_height;
-							        }else{
-							        	layer.msg("生成完毕")
-							        	clearTimeout(self.timesJ)
-							        	self.isBuild = true;
-							        	self.isHeader2 = false;
-										self.isHeader3 = false;
-							        	return false;
-							        }	
-					            }
-					        });
-					    self.timesJ = setTimeout(function () {
-					        i++;
-					        // self.startNum = i;
-					        genpid(i);     
-					    }, self.num*1000);
+										if (i == all-1) {
+									    	layer.msg("生成完毕");
+								        	self.isBuild = true;
+								        	self.isHeader2 = false;
+											self.isHeader3 = false;
+											clearTimeout(self.timesJ);
+											return;
+									    }
+						            }
+						        });
+						    self.timesJ = setTimeout(function () {
+						        i++;
+						        genpid(i);     
+						    }, self.num*1000);
+						    		        							        	
+				        }
 					}
 				}else{
 					layer.msg("你的期望生成数量已超上限，上限" + (self.max_num - self.left_num));
@@ -418,7 +421,6 @@ var vm = new Vue({
 											self.isHeader2 = false;
 											self.isHeader1 = false;
 										}else{
-											console.log(111)
 											self.page ++
 											var seaTime = setTimeout(function(){
 												goenter()
