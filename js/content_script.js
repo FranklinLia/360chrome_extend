@@ -1,4 +1,4 @@
-console.log('我是阿里后妈 content_script.js');
+// console.log('我是阿里后妈 content_script.js');
 
 var width = $(window).width();
 if (width<500){

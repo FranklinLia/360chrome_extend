@@ -9,6 +9,8 @@ var vm = new Vue({
 		key: '',
 		memberid : '',
 		sum: 1,
+		isFirst: 0,
+		isLogin: 0
 	},
 	created(){
 		var self = this;
@@ -16,13 +18,28 @@ var vm = new Vue({
 	},
 	beforeMount(){
 		var self = this;
-		chrome.storage.local.get(["url","key","sum","isOpen"],function(item){
+		chrome.storage.local.get(["url","key","sum","isOpen","name","memberid","token", "isFirst", "isLogin"],function(item){
 			if (item.url) {
 				self.url = item.url
 				self.key = item.key
 				self.sum = item.sum
 				self.isOpen = item.isOpen
 				console.log(self.isOpen);
+			}
+			if (item.name) {
+				self.name = item.name
+			}
+			if (item.isLogin) {
+				self.isLogin = item.isLogin
+			}
+			if (item.isFirst) {
+				self.isFirst = item.isFirst
+			}
+			if (item.memberid) {
+				self.memberid = item.memberid
+			}
+			if (item.token) {
+				self.token = item.token
 			}
 		});
 		$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
@@ -47,31 +64,20 @@ var vm = new Vue({
 	        	chrome.storage.local.set({'name': self.name});
 	        	chrome.storage.local.set({'memberid': self.memberid});
 	        	localStorage.setItem("memberid", self.memberid);
-	            layer.msg('hello');
+	        	if (self.isFirst == 0) {
+	        		layer.msg('hello,开启你的助手之旅');
+	        		self.isFirst = 1;
+	        		chrome.storage.local.set({'isFirst': self.isFirst});
+	        	}
 	            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
 	                console.log(cookie.value);
-	                token = cookie.value;
+	                self.token = cookie.value;
 	                
-	                chrome.storage.local.set({'token': token});
+	                chrome.storage.local.set({'token': self.token});
 	                ///值就在cookie 里面了
 	            })
 	        }
 	    });
-	    chrome.storage.local.get("name",function(item){
-			if (item.name) {
-				self.name = item.name
-			}
-		});
-	    chrome.storage.local.get("memberid",function(item){
-			if (item.memberid) {
-				self.memberid = item.memberid
-			}
-		});
-	    chrome.storage.local.get("token",function(item){
-			if (item.token) {
-				self.token = item.token
-			}
-		});
 	},
 	mounted(){
 		var self = this;
@@ -79,20 +85,21 @@ var vm = new Vue({
 			self.url = localStorage.getItem("url");
 			self.key = localStorage.getItem("key");
 			self.memberid = localStorage.getItem("memberid");
+			$.post(self.url,{api:'pidinfo', key: self.key, memberid: self.memberid},function(res,status){
+		    	console.log(self.key)
+		    	console.log(self.url)
+		    	console.log(self.memberid)
+				console.log(typeof res);
+				var ret = JSON.parse(res);
+				console.log(ret);
+				if (ret.code == 1) {
+					self.sum = ret.left_num;
+			        chrome.storage.local.set({"max_num": ret.max_num});
+			        chrome.storage.local.set({"sum": ret.left_num});
+				}						        
+		    });
 		}
-	    $.post(self.url,{api:'pidinfo', key: self.key, memberid: self.memberid},function(res,status){
-	    	console.log(self.key)
-	    	console.log(self.url)
-	    	console.log(self.memberid)
-			console.log(typeof res);
-			var ret = JSON.parse(res);
-			console.log(ret);
-			if (ret.code == 1) {
-				self.sum = ret.left_num;
-		        chrome.storage.local.set({"max_num": ret.max_num});
-		        chrome.storage.local.set({"sum": ret.left_num});
-			}						        
-	    });
+	    
 	},
 	methods: {
 		open: function(){
@@ -118,8 +125,7 @@ var vm = new Vue({
 				});
 			}else{
 				layer.msg('请登录')
-			}
-			
+			}			
 		},
 		give: function(){
 			if (self.token) {
@@ -146,6 +152,35 @@ var vm = new Vue({
                 top:400,
                 type:'popup'
             });
+            $.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+		        if (ret.data.noLogin){
+		        	layer.msg('请登录');
+		        	self.name = '未登录';
+		        	chrome.storage.local.set({'token': ''});
+		        	console.log(self.isOpen);
+		        	if (self.isOpen) {
+		        		chrome.windows.create({
+			                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+			                width:400,
+			                height:400,
+			                left:600,
+			                top:400,
+			                type:'popup'
+			            });
+		        	}
+		        } else {
+		        	self.name = ret.data.mmNick;
+		        	self.memberid = ret.data.memberid;
+		        	chrome.storage.local.set({'name': self.name});
+		        	chrome.storage.local.set({'memberid': self.memberid});
+		        	localStorage.setItem("memberid", self.memberid);
+		            layer.msg('hello');
+		            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+		                self.token = cookie.value;
+		                chrome.storage.local.set({'token': self.token});
+		            })
+		        }
+		    });
 		},
 		submit: function(){
 			var self = this;
@@ -164,7 +199,7 @@ var vm = new Vue({
 				layer.msg("请输入密钥");
 				return false;
 			}
-
+			layer.msg("保存中..")
 			$.post(self.url,{api:'pidinfo', key: self.key,memberid: self.memberid},function(res,status){
 				console.log(typeof res);
 				var ret = JSON.parse(res);
@@ -174,6 +209,8 @@ var vm = new Vue({
 			        layer.msg("保存成功")
 			        chrome.storage.local.set({"max_num": ret.max_num});
 			        chrome.storage.local.set({"sum": ret.left_num});
+				}else{
+					layer.msg(ret.message)
 				}						        
 		    });
 		}
