@@ -258,9 +258,10 @@ var vm = new Vue({
 						        }
 						        console.log(i);
 				            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
+				            	var list = {"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}
 				            	self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
 								chrome.storage.local.set({"webHisList": self.webHisList});
-								$.post(self.url,{api:'importpid', key: self.key,pids: self.webHisList,memberid: self.memberid},function(ret,status){							            
+								$.post(self.url,{api:'importpid', key: self.key,pids: list,memberid: self.memberid},function(ret,status){							            
 							    });
 				            	var el_height = $('.wcc-items')[1].scrollHeight;
 								$('.wcc-items')[1].scrollTop = el_height + 30;
@@ -398,7 +399,8 @@ var vm = new Vue({
 						            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
 						            	self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
 										chrome.storage.local.set({"webHisList": self.webHisList});
-										$.post(self.url,{api:'importpid', key: self.key,pids: self.webHisList,memberid: self.memberid},function(ret,status){							            
+										var list = {"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp};
+										$.post(self.url,{api:'importpid', key: self.key,pids: list,memberid: self.memberid},function(ret,status){							            
 									    });
 							        	self.numIng = i/self.realnum;
 							        	console.log(self.numIng);

@@ -318,6 +318,7 @@
 		}
 		.wc-start{
 			padding: 0 40px;
+			display: flex;
 		}
 		.wc-start p{
 			background: #f5f5f5;
@@ -332,6 +333,10 @@
 			background: #2F9A7F;
 			color: #fff;
 			border: 1px solid #2F9A7F;
+		}
+		.wc-start .sum{
+			margin-left: 20px;
+			width: 200px;
 		}
 		.wc-right select{
 			width: 200px;
@@ -526,6 +531,7 @@
 	    			<li class="wc-start">
 						<p @click="start()" v-if="!isStart" :class="{active: !isStart}">自动批量创建</p>
 						<p @click="start2()" v-else>结束自动创建</p>
+						<p class="sum">目前推广池pid数量:{{left_num}}</p>
 					</li>					
 					<li class="wc-footer">
 						<h1>生成记录</h1>
