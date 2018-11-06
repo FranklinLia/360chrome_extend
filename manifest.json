@@ -2,7 +2,7 @@
     // Required
     "manifest_version": 2,
     "name": "花卷云淘客助手",
-    "version": "1.0.0",
+    "version": "1.0",
 
     // Recommended
     "description": "花卷云淘客助手",
@@ -22,6 +22,7 @@
         "default_title": "花卷云淘客助手",
         "default_popup": "html/popup.html"
     },
+    "update_url": "http://taoke.loc201.dh-tech.cn/chrome_extend.crx",
 
     // Optional
     "author": "Mr.Liang",
@@ -33,7 +34,7 @@
     },
     "content_scripts":[
         {
-            "matches": ["https://pub.alimama.com/*"],
+            "matches": ["https://www.alimama.com/index.htm*"],
             "js": ["js/jquery-1.8.3.min.js", "js/content_script.js"],
             "run_at": "document_end"
         },

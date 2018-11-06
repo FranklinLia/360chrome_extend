@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="../js/jquery-1.8.3.min.js"></script>
 	<!-- <script type="text/javascript" src="../js/muse-ui.js"></script> -->
 	<script type="text/javascript" src="../js/layer.js"></script>
+	<script type="text/javascript" src="../js/background.js"></script>
 	<!-- <script src="https://unpkg.com/mint-ui/lib/index.js"></script> -->
 	<link rel="stylesheet" href="../css/layui.css">
 	<link rel="stylesheet" href="../css/layer.css">
@@ -427,7 +428,7 @@
 	    			</li>
 					<li class="wc-item">
 						<div class="wc-left">
-							<p>选择你要生成的数量<span>(上限{{max_num - left_num}})</span>:</p>
+							<p>选择你要生成的数量<span>(上限{{max_num - left_num || 0}})</span>:</p>
 						</div>
 						<div class="wc-right status">
 							<input type="text" placeholder="请选择生成的数量" v-model.trim="realnum" class="wc-num">
@@ -516,7 +517,7 @@
 							<input type="text" placeholder="1" v-model.trim="allMin">
 						</div>
 						<div class="wc-right">
-							<span>创建pid数量高于此值自动停止<label>(不能超过{{max_num}})</label>：</span>
+							<span>创建pid数量高于此值自动停止<label>(不能超过{{max_num || 0}})</label>：</span>
 							<input type="text" placeholder="5000" v-model.trim="allMax">
 						</div>						
 					</li>
@@ -531,7 +532,7 @@
 	    			<li class="wc-start">
 						<p @click="start()" v-if="!isStart" :class="{active: !isStart}">自动批量创建</p>
 						<p @click="start2()" v-else>结束自动创建</p>
-						<p class="sum">目前推广池pid数量:{{left_num}}</p>
+						<p class="sum">目前推广池pid数量:{{left_num || 0}}</p>
 					</li>					
 					<li class="wc-footer">
 						<h1>生成记录</h1>

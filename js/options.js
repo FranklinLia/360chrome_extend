@@ -59,6 +59,9 @@ var vm = new Vue({
 	},
 	mounted(){
 		var self = this;
+		chrome.windows.getCurrent(function(tab) {
+		  console.log(tab);
+		});
 		chrome.storage.local.get(["max_num", "sum", "memberid", "webname", "webHisList", "url", "key", "allMin", "allMax", "startNum"],function(item){
 			if (item) {
 				self.max_num = item.max_num
@@ -88,6 +91,48 @@ var vm = new Vue({
 			if (item.token) {
 				self.token = item.token;
 				console.log(self.token);
+				$.get("https://pub.alimama.com/common/adzone/newSelfAdzone2.json?tag="+self.tag+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(res,status){
+					console.log(typeof res)
+					console.log(res);
+					if (res.constructor == String) {
+						chrome.windows.create({
+			                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+			                width:400,
+			                height:400,
+			                left:600,
+			                top:400,
+			                type:'popup'	                
+			            });
+			            $.get("https://pub.alimama.com/common/adzone/newSelfAdzone2.json?tag="+self.tag+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(res,status){
+							console.log(typeof res)
+							console.log(res);
+							if (res.constructor == String) {
+								// chrome.storage.local.set("isLogin", 1)
+								// localStorage.setItem("token", '')
+								layer.msg("访问受限了，请五分钟后再试")
+							}
+						})        
+					}else{
+						if (res.ok) {
+							var ret =res.data;
+				        	self.appList = ret.appList;
+				        	self.otherList = ret.otherList;
+				        	self.webList = ret.webList;
+				        	self.idList = self.webList;
+				        	self.selected = self.idList[0];
+				        	self.siteid = self.selected.siteid;
+				        	var str = [];
+				        	goenter();
+				        	function goenter(){
+				        		$.get("https://pub.alimama.com/common/adzone/adzoneManage.json?&tab=1&toPage="+self.page+"&perPageSize=40&gcid="+self.gcid+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(ret,status){
+									if (ret.ok) {								
+										self.seaNum = ret.data.paginator.items;								
+									}
+							    });
+				        	}			        
+						}
+					}					        	
+			    });
 			}else{
 				chrome.windows.create({
 	                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
@@ -101,48 +146,48 @@ var vm = new Vue({
 		});	
 		var el_height = $('.wcc-items')[0].scrollHeight;
 		$('.wcc-items')[0].scrollTop = el_height;
-		$.get("https://pub.alimama.com/common/adzone/newSelfAdzone2.json?tag="+self.tag+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(res,status){
-			console.log(typeof res)
-			console.log(res);
-			if (res.constructor == String) {
-				chrome.windows.create({
-	                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
-	                width:400,
-	                height:400,
-	                left:600,
-	                top:400,
-	                type:'popup'	                
-	            });
-	            $.get("https://pub.alimama.com/common/adzone/newSelfAdzone2.json?tag="+self.tag+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(res,status){
-					console.log(typeof res)
-					console.log(res);
-					if (res.constructor == String) {
-						// chrome.storage.local.set("isLogin", 1)
-						// localStorage.setItem("token", '')
-						layer.msg("访问受限了，请五分钟后再试")
-					}
-				})        
-			}else{
-				if (res.ok) {
-					var ret =res.data;
-		        	self.appList = ret.appList;
-		        	self.otherList = ret.otherList;
-		        	self.webList = ret.webList;
-		        	self.idList = self.webList;
-		        	self.selected = self.idList[0];
-		        	self.siteid = self.selected.siteid;
-		        	var str = [];
-		        	goenter();
-		        	function goenter(){
-		        		$.get("https://pub.alimama.com/common/adzone/adzoneManage.json?&tab=1&toPage="+self.page+"&perPageSize=40&gcid="+self.gcid+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(ret,status){
-							if (ret.ok) {								
-								self.seaNum = ret.data.paginator.items;								
-							}
-					    });
-		        	}			        
-				}
-			}					        	
-	    });
+		// $.get("https://pub.alimama.com/common/adzone/newSelfAdzone2.json?tag="+self.tag+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(res,status){
+		// 	console.log(typeof res)
+		// 	console.log(res);
+		// 	if (res.constructor == String) {
+		// 		chrome.windows.create({
+	 //                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+	 //                width:400,
+	 //                height:400,
+	 //                left:600,
+	 //                top:400,
+	 //                type:'popup'	                
+	 //            });
+	 //            $.get("https://pub.alimama.com/common/adzone/newSelfAdzone2.json?tag="+self.tag+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(res,status){
+		// 			console.log(typeof res)
+		// 			console.log(res);
+		// 			if (res.constructor == String) {
+		// 				// chrome.storage.local.set("isLogin", 1)
+		// 				// localStorage.setItem("token", '')
+		// 				layer.msg("访问受限了，请五分钟后再试")
+		// 			}
+		// 		})        
+		// 	}else{
+		// 		if (res.ok) {
+		// 			var ret =res.data;
+		//         	self.appList = ret.appList;
+		//         	self.otherList = ret.otherList;
+		//         	self.webList = ret.webList;
+		//         	self.idList = self.webList;
+		//         	self.selected = self.idList[0];
+		//         	self.siteid = self.selected.siteid;
+		//         	var str = [];
+		//         	goenter();
+		//         	function goenter(){
+		//         		$.get("https://pub.alimama.com/common/adzone/adzoneManage.json?&tab=1&toPage="+self.page+"&perPageSize=40&gcid="+self.gcid+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(ret,status){
+		// 					if (ret.ok) {								
+		// 						self.seaNum = ret.data.paginator.items;								
+		// 					}
+		// 			    });
+		//         	}			        
+		// 		}
+		// 	}					        	
+	 //    });
 	},
 	methods: {
 		change: function(id){
@@ -212,7 +257,7 @@ var vm = new Vue({
 			chrome.storage.local.set({"webname": self.webname});
 			console.log(mid+min+max+self.max_num)
 			layer.msg("已开始自动，请勿关闭页面")
-			if ( mid >= min && max < self.max_num) {
+			if ( mid >= min && max <= self.max_num) {
 				console.log(1111)
 				genpid(i)
 				function genpid(i) {
@@ -258,31 +303,26 @@ var vm = new Vue({
 						        }
 						        console.log(i);
 				            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
-				            	var list = {"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}
+				            	var list = [{"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}];
 				            	self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
 								chrome.storage.local.set({"webHisList": self.webHisList});
-								$.post(self.url,{api:'importpid', key: self.key,pids: list,memberid: self.memberid},function(ret,status){							            
+								$.post(self.url,{api:'importpid', key: self.key,pids: list,memberid: self.memberid},function(res,status){							            
+							    	console.log(typeof res);
+									console.log(status);
+									var ret = JSON.parse(res);
+									if (ret.code == 1) {
+										self.sum = ret.left_num;
+										self.left_num = ret.left_num;
+										self.max_num = ret.max_num;
+								        chrome.storage.local.set({"max_num": ret.max_num});
+								        chrome.storage.local.set({"sum": ret.left_num});
+								        self.start();
+									}else{
+										layer.msg(ret.message)
+									}
 							    });
 				            	var el_height = $('.wcc-items')[1].scrollHeight;
-								$('.wcc-items')[1].scrollTop = el_height + 30;
-								setTimeout(function(){
-									$.post(self.url,{api:'pidinfo', key: self.key, memberid: self.memberid},function(res,status){
-										console.log(typeof res);
-										console.log(status);
-										var ret = JSON.parse(res);
-										if (ret.code == 1) {
-											self.sum = ret.left_num;
-											self.left_num = ret.left_num;
-											self.max_num = ret.max_num;
-									        chrome.storage.local.set({"max_num": ret.max_num});
-									        chrome.storage.local.set({"sum": ret.left_num});
-									        self.start();
-										}else{
-											layer.msg(ret.message)
-										}						        
-								    });
-								},2000)
-								
+								$('.wcc-items')[1].scrollTop = el_height + 30;								
 				            }
 				        });
 				    self.timesJ = setTimeout(function () {
@@ -397,14 +437,42 @@ var vm = new Vue({
 							        	self.isHeader2 = true;
 										self.isHeader3 = true;
 						            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
+						            	var list = [{"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}];
 						            	self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
 										chrome.storage.local.set({"webHisList": self.webHisList});
-										var list = {"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp};
-										$.post(self.url,{api:'importpid', key: self.key,pids: list,memberid: self.memberid},function(ret,status){							            
+										$.post(self.url,{api:'importpid', key: self.key, pids: list, memberid: self.memberid},function(res,status){	
+									    	if (status == 'success') {
+									    		console.log(res);
+									    		var ret = JSON.parse(res);
+										    	if (ret.code == 1) {
+													self.sum = ret.left_num;
+													self.left_num = ret.left_num;
+													self.max_num = ret.max_num;
+											        chrome.storage.local.set({"max_num": ret.max_num});
+											        chrome.storage.local.set({"sum": ret.left_num});
+											        var opt = {
+													  	type: "basic",
+													  	title: "创建通知",
+													  	message: "创建成功一个pid",
+													  	iconUrl: "../img/48.png"
+													}
+									                chrome.notifications.create('1',opt, function(){});
+												}else{
+													layer.msg(ret.message)
+												}
+									    	}else{
+									    		chrome.windows.create({
+									                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+									                width:400,
+									                height:400,
+									                left:600,
+									                top:400,
+													type:'popup'
+												});	
+									    	}	
 									    });
-							        	self.numIng = i/self.realnum;
-							        	console.log(self.numIng);
-						            	var el_height = $('.wcc-items')[0].scrollHeight;
+										self.numIng = i/self.realnum;
+										var el_height = $('.wcc-items')[0].scrollHeight;
 										$('.wcc-items')[0].scrollTop = el_height;
 										if (i == all-1) {
 									    	layer.msg("生成完毕");
@@ -453,6 +521,7 @@ var vm = new Vue({
 				self.count = 0;
 				goenter();
 				function goenter(){
+					console.log(self.page)
 	        		$.get("https://pub.alimama.com/common/adzone/adzoneManage.json?&tab=1&toPage="+self.page+"&perPageSize=40&gcid="+self.gcid+"&t="+self.t+"&pvid="+self.pvid+"&_tb_token_="+self.token+"&_input_charset=utf-8",function(ret,status){
 	        			if (ret.constructor == String) {
 							chrome.windows.create({
@@ -496,9 +565,6 @@ var vm = new Vue({
 												self.isHeader1 = false;
 												return false;
 											}
-											
-
-											// self.count = (self.repeat_num+self.success_num)/self.seaNum;
 										}else{
 											self.isEnter = true
 											self.isHeader2 = false;
