@@ -370,11 +370,11 @@
 		<div class="wrapper">
 			<div class="wrapper-header">
 				<h1 :class="{active: isActive == 1}" @click="choose(1)" v-show="!isHeader1">{{title}}</h1>
-				<h1 :class="{active: isActive == 1}" v-show="isHeader1">{{title}}</h1>
+				<h1 :class="{active: isActive == 1}" @click="getTip()" v-show="isHeader1">{{title}}</h1>
 				<h1 :class="{active: isActive == 2}" @click="choose(2)" v-show="!isHeader2">批量自动创建pid</h1>
-				<h1 :class="{active: isActive == 2}" v-show="isHeader2">批量自动创建pid</h1>
+				<h1 :class="{active: isActive == 2}" @click="getTip()" v-show="isHeader2">批量自动创建pid</h1>
 				<h1 :class="{active: isActive == 3}" @click="choose(3)" v-show="!isHeader3">批量导入历史生成的pid</h1>
-				<h1 :class="{active: isActive == 3}" v-show="isHeader3">批量导入历史生成的pid</h1>
+				<h1 :class="{active: isActive == 3}" @click="getTip()" v-show="isHeader3">批量导入历史生成的pid</h1>
 			</div>			
 			<div class="wrapper-content" v-show="isActive == 1">
 				<ul>
@@ -412,10 +412,10 @@
 					</li>
 					<li class="wc-item">
 						<div class="wc-left">
-							<p>推广位名称前缀:</p>
+							<p>推广位名称前缀<span>(不要超过5个字符)</span>:</p>
 						</div>
 						<div class="wc-right status">
-							<input type="text" placeholder="例如：代理" class="wc-num" v-model.trim="webname">
+							<input type="text" placeholder="例如：代理" class="wc-num" v-model.trim="webname" maxlength="5">
 						</div>
 					</li>
 					<li class="wc-item" style="line-height: 14px;">
@@ -505,10 +505,10 @@
 					</li>
 					<li class="wc-item">
 						<div class="wc-left">
-							<p>推广位名称前缀:</p>
+							<p>推广位名称前缀<span>(不要超过5个字符)</span>:</p>
 						</div>
 						<div class="wc-right status">
-							<input type="text" placeholder="例如：代理" class="wc-num" v-model.trim="webname">
+							<input type="text" placeholder="例如：代理" class="wc-num" v-model.trim="webname" maxlength="5">
 						</div>
 					</li>
 					<li class="wc-item auto">

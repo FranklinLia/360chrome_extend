@@ -25,7 +25,6 @@ var vm = new Vue({
 				self.key = item.key
 				self.sum = item.sum
 				self.isOpen = item.isOpen
-				console.log(self.isOpen);
 			}
 			if (item.name) {
 				self.name = item.name
@@ -48,7 +47,6 @@ var vm = new Vue({
 	        	layer.msg('请登录');
 	        	self.name = '未登录';
 	        	chrome.storage.local.set({'token': ''});
-	        	console.log(self.isOpen);
 	        	if (self.isOpen) {
 	        		chrome.windows.create({
 		                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
@@ -71,7 +69,6 @@ var vm = new Vue({
 	        		chrome.storage.local.set({'isFirst': self.isFirst});
 	        	}
 	            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
-	                console.log(cookie.value);
 	                self.token = cookie.value;
 	                chrome.storage.local.set({'token': self.token});
 	                ///值就在cookie 里面了
@@ -80,10 +77,8 @@ var vm = new Vue({
 	    });
 	},
 	mounted(){
-		console.log(111)
 		var self = this;
 		var link = window.localStorage.getItem("url")
-		console.log(link);
 		if (link) {
 			self.url = localStorage.getItem("url");
 			self.key = localStorage.getItem("key");
@@ -153,7 +148,6 @@ var vm = new Vue({
                 left:600,
                 top:400,
                 type:'popup',
-                tabId: 2,
                 incognito: false
             });
             $.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
@@ -161,7 +155,6 @@ var vm = new Vue({
 		        	layer.msg('请登录');
 		        	self.name = '未登录';
 		        	chrome.storage.local.set({'token': ''});
-		        	console.log(self.isOpen);
 		        	if (self.isOpen) {
 		        		chrome.windows.create({
 			                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
@@ -204,10 +197,9 @@ var vm = new Vue({
 			}
 			layer.msg("保存中..")
 			$.post(self.url,{api:'pidinfo', key: self.key,memberid: self.memberid},function(res,status){
-				console.log(typeof res);
+				console.log(res);
 				var ret = JSON.parse(res);
-				console.log(ret);
-				if (ret.code == 1) {
+				if (ret.code == 1) {	
 					self.sum = ret.left_num;
 			        layer.msg("保存成功")
 			        chrome.storage.local.set({"max_num": ret.max_num});

@@ -22,7 +22,7 @@
         "default_title": "花卷云淘客助手",
         "default_popup": "html/popup.html"
     },
-    "update_url": "http://taoke.loc201.dh-tech.cn/chrome_extend.crx",
+    "update_url": "http://taoke.loc201.dh-tech.cn/update.xml",
 
     // Optional
     "author": "Mr.Liang",
