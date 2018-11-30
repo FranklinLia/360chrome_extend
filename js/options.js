@@ -208,6 +208,10 @@ var vm = new Vue({
 			if (self.isStop2 == 1) {
 				return;
 			}
+			if (self.idList.length == 0) {
+				layer.msg("请设置推广媒介后创建")
+				return false;
+			}
 			self.isHeader1 = true;
 			self.isHeader3 = true;
 			self.isStart = true;
@@ -265,7 +269,11 @@ var vm = new Vue({
 			            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
 			            	var list = [{"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}];
 							$.post(self.url,{api:'importpid', key: self.key,pids: list,memberid: self.memberid},function(res,status){
-								var ret = JSON.parse(res);
+								if (res.constructor == String) {
+									var ret = JSON.parse(res);
+								}else{
+									var ret = res;
+								}
 								if (ret.code == 1) {
 									self.sum = ret.left_num;
 									self.left_num = ret.left_num;
@@ -275,7 +283,13 @@ var vm = new Vue({
 							        chrome.storage.local.set({"max_num": ret.max_num});
 							        chrome.storage.local.set({"sum": ret.left_num});
 								}else{
-									layer.msg(ret.message || "服务器开小差")
+									layer.msg(ret.message || ret.msg)
+									clearInterval(self.timesJ);
+									clearInterval(self.timesT);
+									self.isStart = false;
+									self.isHeader1 = false;
+									self.isHeader2 = false;
+									self.isHeader3 = false;
 								}
 						    });
 			            	var el_height = $('.wcc-items')[1].scrollHeight;
@@ -346,6 +360,10 @@ var vm = new Vue({
 			var min = self.left_num;
 			var i = 1;
 			chrome.storage.local.set({"webname": self.webname});
+			if (self.idList.length == 0) {
+				layer.msg("请设置推广媒介后创建")
+				return false;
+			}
 			if (id == 1) {
 				self.isBuild = false;
 				if (max - min + 1> mid) {
@@ -392,17 +410,25 @@ var vm = new Vue({
 										self.isHeader3 = true;
 						            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
 						            	var list = [{"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}];
-						            	self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
-										chrome.storage.local.set({"webHisList": self.webHisList});
+						            	
 										$.post(self.url,{api:'importpid', key: self.key, pids: list, memberid: self.memberid},function(res,status){	
 									    	if (status == 'success') {
-									    		var ret = JSON.parse(res);
+									    		if (res.constructor == String) {
+													var ret = JSON.parse(res);
+												}else{
+													var ret = res;
+												}
 										    	if (ret.code == 1) {
 													self.sum = ret.left_num;
 													self.left_num = ret.left_num;
 													self.max_num = ret.max_num;
 											        chrome.storage.local.set({"max_num": ret.max_num});
 											        chrome.storage.local.set({"sum": ret.left_num});
+											        self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
+													chrome.storage.local.set({"webHisList": self.webHisList});
+													self.numIng = i/self.realnum;
+													var el_height = $('.wcc-items')[0].scrollHeight;
+													$('.wcc-items')[0].scrollTop = el_height;
 											  //       var opt = {
 													//   	type: "basic",
 													//   	title: "创建通知",
@@ -411,7 +437,12 @@ var vm = new Vue({
 													// }
 									    //             chrome.notifications.create('1',opt, function(){});
 												}else{
-													layer.msg(ret.message)
+													layer.msg(ret.message || ret.msg)
+													clearTimeout(self.timesJ)
+													self.isBuild = true;
+										        	self.isHeader2 = false;
+													self.isHeader3 = false;
+													return false;
 												}
 									    	}else{
 									    		chrome.windows.create({
@@ -424,9 +455,7 @@ var vm = new Vue({
 												});	
 									    	}	
 									    });
-										self.numIng = i/self.realnum;
-										var el_height = $('.wcc-items')[0].scrollHeight;
-										$('.wcc-items')[0].scrollTop = el_height;
+										
 										if (i == all-1) {
 									    	layer.msg("生成完毕");
 								        	self.isBuild = true;
@@ -500,12 +529,16 @@ var vm = new Vue({
 								self.isHeader2 = true;
 								self.isHeader1 = true;
 								self.enterList = str;
-								$.post(self.url,{api:'importpid', key: self.key,pids:self.enterList,memberid: self.memberid},function(ret,status){
-									var res = JSON.parse(ret);
-									if (res.code == 1) {
-										layer.msg(res.message)
-										self.repeat_num = res.repeat_num;
-										self.success_num = res.success_num;
+								$.post(self.url,{api:'importpid', key: self.key,pids:self.enterList,memberid: self.memberid},function(res,status){
+									if (res.constructor == String) {
+										var ret = JSON.parse(res);
+									}else{
+										var ret = res;
+									}
+									if (ret.code == 1) {
+										layer.msg(ret.message)
+										self.repeat_num = ret.repeat_num;
+										self.success_num = ret.success_num;
 										self.count = self.page/pages;
 										if (self.count >= 1) {
 											clearTimeout(self.seaTime)
@@ -519,7 +552,7 @@ var vm = new Vue({
 										self.isEnter = true
 										self.isHeader2 = false;
 										self.isHeader1 = false;
-										layer.msg(res.message)
+										layer.msg(ret.message || ret.msg)
 										clearTimeout(self.seaTime)
 										return false;
 									}   

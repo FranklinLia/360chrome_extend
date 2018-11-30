@@ -360,6 +360,22 @@
 			text-align: center;
 			text-indent: 0;
 		}
+		.wc-tips{
+			margin-left: 10px;
+			margin-top: 5px;
+			font-size: 10px;
+			color: #ff0037;
+		}
+		.wc-tips span{
+			margin-right: 5px;
+			width: 14px;
+			height: 14px;
+			border-radius: 14px;
+			line-height: 14px;
+			border: 1px solid #ff0037;
+			display: inline-block;
+			text-align: center;
+		}
 	</style>
 </head>
 <body>
@@ -584,6 +600,7 @@
 							<p class="count">{{seaNum}}</p>
 							<p class="enter" @click="enter()" v-if="isEnter">点击导入</p>
 							<p class="enter active" @click="enter2()" v-else>导入中</p>
+							<div class="wc-tips"><span>!</span>请谨慎导入历史pid，如果历史pid已经分配给过老客户，就不要导入。</div>
 						</div>
 					</li>				
 					<li class="wc-item">

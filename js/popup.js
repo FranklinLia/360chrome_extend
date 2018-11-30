@@ -109,7 +109,7 @@ var vm = new Vue({
 		build: function(){
 			var self = this;
 			if (self.token) {
-				var option_url = chrome.extension.getURL('html/options.html');
+				var option_url = chrome.extension.getURL('html/options.html#reloaded');
 				chrome.tabs.getAllInWindow(null,function(tabs){
 				    var option_tab = tabs.filter(function(t) { return t.url === option_url });
 				    if(option_tab.length){
@@ -126,7 +126,7 @@ var vm = new Vue({
 		give: function(){
 			var self = this;
 			if (self.token) {
-				var option_url = chrome.extension.getURL('html/options.html');
+				var option_url = chrome.extension.getURL('html/options.html#reloaded');
 				chrome.tabs.getAllInWindow(null,function(tabs){
 				    var option_tab = tabs.filter(function(t) { return t.url === option_url });
 				    if(option_tab.length){
@@ -198,14 +198,20 @@ var vm = new Vue({
 			layer.msg("保存中..")
 			$.post(self.url,{api:'pidinfo', key: self.key,memberid: self.memberid},function(res,status){
 				console.log(res);
-				var ret = JSON.parse(res);
+				console.log(typeof res);
+				if (res.constructor == String) {
+					var ret = JSON.parse(res);
+				}else{
+					var ret = res;
+				}
+				
 				if (ret.code == 1) {	
 					self.sum = ret.left_num;
 			        layer.msg("保存成功")
 			        chrome.storage.local.set({"max_num": ret.max_num});
 			        chrome.storage.local.set({"sum": ret.left_num});
 				}else{
-					layer.msg(ret.message)
+					layer.msg(ret.message || res.msg)
 				}						        
 		    });
 		}
