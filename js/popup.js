@@ -3,7 +3,7 @@ var vm = new Vue({
 	data:{
 		isOpen: false,
 		value: 6,
-		name: '未登录',
+		name: '点击登录',
 		token: '',
 		url: '',
 		key: '',
@@ -14,8 +14,6 @@ var vm = new Vue({
 	},
 	created(){
 		var self = this;
-
-
 	},
 	beforeMount(){
 		var self = this;
@@ -45,7 +43,7 @@ var vm = new Vue({
 		$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
 	        if (ret.data.noLogin){
 	        	layer.msg('请登录');
-	        	self.name = '未登录';
+	        	self.name = '点击登录';
 	        	chrome.storage.local.set({'token': ''});
 	        	if (self.isOpen) {
 	        		chrome.windows.create({
@@ -116,7 +114,7 @@ var vm = new Vue({
 				        // 已经打开，直接激活
 				        chrome.tabs.update(option_tab[0].id,{selected:true});
 				    }else{
-				        chrome.tabs.create({url:option_url,selected:true})
+				        chrome.storage.local.set({"sum": ret.left_num});
 				    }
 				});
 			}else{
@@ -195,6 +193,10 @@ var vm = new Vue({
 				layer.msg("请输入密钥");
 				return false;
 			}
+
+			var option_url = chrome.extension.getURL('html/options.html#reloaded');
+			chrome.tabs.update({url:option_url,selected:true})
+
 			layer.msg("保存中..")
 			$.post(self.url,{api:'pidinfo', key: self.key,memberid: self.memberid},function(res,status){
 				console.log(res);
@@ -211,7 +213,7 @@ var vm = new Vue({
 			        chrome.storage.local.set({"max_num": ret.max_num});
 			        chrome.storage.local.set({"sum": ret.left_num});
 				}else{
-					layer.msg(ret.message || res.msg)
+					layer.msg(ret.message || ret.msg)
 				}						        
 		    });
 		}
