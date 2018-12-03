@@ -112,9 +112,15 @@ var vm = new Vue({
 				    var option_tab = tabs.filter(function(t) { return t.url === option_url });
 				    if(option_tab.length){
 				        // 已经打开，直接激活
-				        chrome.tabs.update(option_tab[0].id,{selected:true});
+				        chrome.tabs.update(
+				        	option_tab[0].id, {
+				        		selected:true
+				        	});
 				    }else{
-				        chrome.storage.local.set({"sum": ret.left_num});
+				        chrome.tabs.create({
+				        	url:option_url, 
+				        	selected:true
+				        })
 				    }
 				});
 			}else{

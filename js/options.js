@@ -2,7 +2,7 @@ var vm = new Vue({
 	el: "#container",
 	data:{
 		isChange: false,
-		title:'批量创建pid',
+		title:'批量手动创建pid',
 		num: 5,
 		count: 1,
 		statu: 0,
@@ -219,7 +219,7 @@ var vm = new Vue({
 				layer.msg("已开始自动，请勿关闭页面")
 			}
 
-			if (i>=self.left_num && i<max) {
+			if (i >= self.left_num && i <= max) {
 				self.timesJ = setInterval(function(){
 					self.getEnter(i);
 					i++;
@@ -232,75 +232,83 @@ var vm = new Vue({
 			}					
 		},
 		getEnter: function(i){
-			var self = this;			
-		    var timestamp = Date.parse( new Date()).toString();
-		    stamp = timestamp.substring(0,10);
-		    var obj = stamp;
-		    var newDate = new Date();
-		    newDate.setTime(obj * 1000);
+			var self = this;
+			var i = self.allMin;
+			var max = self.allMax;
+			console.log(i + "" + max + self.left_num)
+			if (i >= self.left_num && i <= max) {
+							
+			    var timestamp = Date.parse( new Date()).toString();
+			    stamp = timestamp.substring(0,10);
+			    var obj = stamp;
+			    var newDate = new Date();
+			    newDate.setTime(obj * 1000);
 
-		    var year = newDate.getFullYear();
-		    var month = newDate.getMonth() + 1;
-		    month = month < 10 ? "0" + month : month;
-		    var date = newDate.getDate();
-		    date = date < 10 ? "0" + date : date;
+			    var year = newDate.getFullYear();
+			    var month = newDate.getMonth() + 1;
+			    month = month < 10 ? "0" + month : month;
+			    var date = newDate.getDate();
+			    date = date < 10 ? "0" + date : date;
 
-		    var hours = newDate.getHours();
-		    hours = hours < 10 ? "0" + hours : hours;
-		    var minute = newDate.getMinutes();
-		    minute = minute < 10 ? "0" + minute : minute;
-		    var second = newDate.getSeconds();
-		    second = second < 10 ? "0" + second : second;
-		    timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minute + ":" + second;
-		    
-		    var data = {
-		        'siteid':self.siteid,  // 媒体id
-		        'gcid': self.gcid,   // 0 网站推广，7 APP推广，  8导购推广
-		        'tag': self.tag,
-		        'selectact':'add',
-		        'newadzonename':name,
-		        '_tb_token_':self.token,
-		        'pvid':self.pvid,
-		    };
-		    $.post("https://pub.alimama.com/common/adzone/selfAdzoneCreate.json",
-		        data
-		        ,function(ret,status){
-		            if (ret.ok) {
-		            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
-		            	var list = [{"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}];
-						$.post(self.url,{api:'importpid', key: self.key,pids: list,memberid: self.memberid},function(res,status){
-							if (res.constructor == String) {
-								var ret = JSON.parse(res);
-							}else{
-								var ret = res;
-							}
-							if (ret.code == 1) {
-								self.sum = ret.left_num;
-								self.left_num = ret.left_num;
-								self.max_num = ret.max_num;
-								self.startNum ++;
-							    chrome.storage.local.set({"startNum": self.startNum});
-							    var name = self.webname + stamp+"_"+self.startNum;
-								self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
-								chrome.storage.local.set({"webHisList": self.webHisList});
-						        chrome.storage.local.set({"max_num": ret.max_num});
-						        chrome.storage.local.set({"sum": ret.left_num});
-							}else{
-								layer.msg(ret.message || ret.msg)
-								clearInterval(self.timesJ);
-								clearInterval(self.timesT);
-								self.isStart = false;
-								self.isHeader1 = false;
-								self.isHeader2 = false;
-								self.isHeader3 = false;
-							}
-					    });
-		            	var el_height = $('.wcc-items')[1].scrollHeight;
-						$('.wcc-items')[1].scrollTop = el_height + 30;								
-		            }else {
-		            }
-		        });
-
+			    var hours = newDate.getHours();
+			    hours = hours < 10 ? "0" + hours : hours;
+			    var minute = newDate.getMinutes();
+			    minute = minute < 10 ? "0" + minute : minute;
+			    var second = newDate.getSeconds();
+			    second = second < 10 ? "0" + second : second;
+			    timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minute + ":" + second;
+			    
+			    var data = {
+			        'siteid':self.siteid,  // 媒体id
+			        'gcid': self.gcid,   // 0 网站推广，7 APP推广，  8导购推广
+			        'tag': self.tag,
+			        'selectact':'add',
+			        'newadzonename':name,
+			        '_tb_token_':self.token,
+			        'pvid':self.pvid,
+			    };
+			    $.post("https://pub.alimama.com/common/adzone/selfAdzoneCreate.json",
+			        data
+			        ,function(ret,status){
+			            if (ret.ok) {
+			            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
+			            	var list = [{"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}];
+							$.post(self.url,{api:'importpid', key: self.key,pids: list,memberid: self.memberid},function(res,status){
+								if (res.constructor == String) {
+									var ret = JSON.parse(res);
+								}else{
+									var ret = res;
+								}
+								if (ret.code == 1) {
+									self.sum = ret.left_num;
+									self.left_num = ret.left_num;
+									self.max_num = ret.max_num;
+									self.startNum ++;
+								    chrome.storage.local.set({"startNum": self.startNum});
+								    var name = self.webname + stamp+"_"+self.startNum;
+									self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
+									chrome.storage.local.set({"webHisList": self.webHisList});
+							        chrome.storage.local.set({"max_num": ret.max_num});
+							        chrome.storage.local.set({"sum": ret.left_num});
+								}else{
+									layer.msg(ret.message || ret.msg)
+									clearInterval(self.timesJ);
+									clearInterval(self.timesT);
+									self.isStart = false;
+									self.isHeader1 = false;
+									self.isHeader2 = false;
+									self.isHeader3 = false;
+								}
+						    });
+			            	var el_height = $('.wcc-items')[1].scrollHeight;
+							$('.wcc-items')[1].scrollTop = el_height + 30;								
+			            }else {
+			            }
+			        });
+			}else{
+				clearInterval(self.timesJ);
+				this.timesT = setInterval(self.confirm, 60000);
+			}
 		},
 		confirm: function(){
 			var self = this;
@@ -318,7 +326,7 @@ var vm = new Vue({
 			        chrome.storage.local.set({"sum": ret.left_num});
 			        var i = self.allMin;
 			        var max = self.allMax;
-					if (i >= self.left_num && i < max) {
+					if (i >= self.left_num && i <= max) {
 			        	self.timesJ = setInterval(function(){
 							self.getEnter(i);
 							i++;
