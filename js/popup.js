@@ -199,8 +199,7 @@ var vm = new Vue({
 
 			layer.msg("保存中..")
 			$.post(self.url,{api:'pidinfo', key: self.key,memberid: self.memberid},function(res,status){
-				console.log(res);
-				console.log(typeof res);
+
 				if (res.constructor == String) {
 					var ret = JSON.parse(res);
 				}else{

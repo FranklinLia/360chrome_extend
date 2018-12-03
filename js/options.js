@@ -228,7 +228,7 @@ var vm = new Vue({
 				if (self.timesJ != null) {
 					clearInterval(self.timesJ);
 				}				
-				this.timesT = setInterval(self.confirm, 20000);
+				this.timesT = setInterval(self.confirm, 60000);
 			}					
 		},
 		getEnter: function(i){
@@ -303,7 +303,6 @@ var vm = new Vue({
 
 		},
 		confirm: function(){
-			console.log(666)
 			var self = this;
 			$.post(self.url,{api:'pidinfo', key: self.key,memberid: self.memberid},function(res,status){
 				if (res.constructor == String) {
@@ -319,7 +318,6 @@ var vm = new Vue({
 			        chrome.storage.local.set({"sum": ret.left_num});
 			        var i = self.allMin;
 			        var max = self.allMax;
-			        console.log(i + '/' + self.left_num + max)
 					if (i >= self.left_num && i < max) {
 			        	self.timesJ = setInterval(function(){
 							self.getEnter(i);
@@ -347,7 +345,6 @@ var vm = new Vue({
 		clear: function(){
 			var self = this;
 			chrome.storage.local.remove("webHisList", function(){
-				console.log(self.webHisList)
 				if (self.webHisList.length == 0) {
 					layer.msg("记录已为空")
 					self.startNum = 0;
