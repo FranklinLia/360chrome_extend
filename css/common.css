@@ -49,3 +49,7 @@ table {
 body, button, input, select, textarea{
 	font: 12px/1.5 Microsoft YaHei, Arial, sans-serif, SimSun;
 }
+
+[v-cloak] {
+    display: none;
+}

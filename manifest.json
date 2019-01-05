@@ -2,7 +2,7 @@
     // Required
     "manifest_version": 2,
     "name": "花卷云淘客助手",
-    "version": "1.0",
+    "version": "1.1",
 
     // Recommended
     "description": "花卷云淘客助手",
@@ -39,8 +39,23 @@
             "run_at": "document_end"
         },
         {
+            "matches": ["https://pub.alimama.com/index.htm*"],
+            "js": ["js/jquery-1.8.3.min.js", "js/content_script.js"],
+            "run_at": "document_end"
+        },
+        {
             "matches": ["https://login.taobao.com/member/login.jhtml?style=mini*"],
             "js": ["js/jquery-1.8.3.min.js", "js/login.js"],
+            "run_at": "document_end"
+        },
+        {
+            "matches": ["https://www.alimama.com/member/login.htm*"],
+            "js": ["js/jquery-1.8.3.min.js", "js/login.js"],
+            "run_at": "document_end"
+        },
+        {
+            "matches": ["https://pub.alimama.com/common/adzone/newSelfAdzone2.json*"],
+            "js": ["js/jquery-1.8.3.min.js", "js/content_script.js"],
             "run_at": "document_end"
         }
     ],

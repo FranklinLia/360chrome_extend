@@ -41,7 +41,21 @@ chrome.extension.onMessage.addListener(function (data) {
     if (data.status){
         var self = this;
         var ret = data.data;
-        self.name = ret.mmNick;
+        if (ret.mmNick) {
+            self.name = ret.mmNick;
+        }
+        
+        
+        chrome.windows.getAll(null, function (win) {
+            win.map(function (value,index,array) {
+                // alert(value);
+                if (value.type=='popup'){
+                    // alert(1)
+                    chrome.windows.remove(value.id);
+                }
+            });
+        });
+
         function onload(){
             if(location.href.indexOf('#reloaded')==-1){
                 location.href=location.href+"#reloaded";
@@ -49,14 +63,6 @@ chrome.extension.onMessage.addListener(function (data) {
             }
         };
         onload();
-        chrome.windows.getAll(null, function (win) {
-            win.map(function (value,index,array) {
-                // alert(value);
-                if (value.type=='popup'){
-                    chrome.windows.remove(value.id);
-                }
-            });
-        });
     }
     // alert('background收到了'+JSON.stringify(data));
 });

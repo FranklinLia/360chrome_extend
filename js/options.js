@@ -1,3 +1,4 @@
+var allTime
 var vm = new Vue({
 	el: "#container",
 	data:{
@@ -49,6 +50,9 @@ var vm = new Vue({
 		isStop: 0,
 		seaTime: '',
 		isStop2: 0,
+		isGoLogin: 0,
+		isGoLogin2: 0,
+		offlineLogin: 1,
 	},
 	watch: {
 		numIng: function(){
@@ -56,6 +60,9 @@ var vm = new Vue({
 		},
 		count: function(){
 			document.getElementById("wc-top2").style.width = this.count*100 + "%";			
+		},
+		token: function(){
+			console.log("tt")
 		}
 	},
 	mounted(){
@@ -92,7 +99,7 @@ var vm = new Vue({
 						if (res.indexOf("<title>阿里妈妈</title>") != -1 ) {
 							layer.msg("没有登录或未设置接口")
 							chrome.windows.create({
-				                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+				                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true&forward=http%3A%2F%2Fpub.alimama.com",
 				                width:400,
 				                height:400,
 				                left:600,
@@ -109,7 +116,7 @@ var vm = new Vue({
 				                height:400,
 				                left:600,
 				                top:400,
-				                type:'normal'	
+				                type:'popup'	
 							})
 						}        
 					}else{
@@ -142,10 +149,66 @@ var vm = new Vue({
 	                top:400,
 	                type:'popup'
 	            });
+	            $.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+			        if (ret.data.noLogin){
+			        	layer.msg('请登录');
+			        	self.name = '未登录';
+			        	chrome.storage.local.set({'token': ''});
+			        	if (self.isOpen) {
+			        		chrome.windows.create({
+				                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+				                width:400,
+				                height:400,
+				                left:600,
+				                top:400,
+				                type:'popup'
+				            });
+			        	}
+			        } else {
+			            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+			                self.token = cookie.value;
+			                chrome.storage.local.set({'token': self.token});
+			                location.reload();
+			            })
+			        }
+			    });
 			}
 		});	
 		var el_height = $('.wcc-items')[0].scrollHeight;
 		$('.wcc-items')[0].scrollTop = el_height;
+
+		allTime = setInterval(function(){
+			chrome.windows.create({
+                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+                width:400,
+                height:400,
+                left:600,
+                top:400,
+                type:'popup'
+            });
+            $.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+		        if (ret.data.noLogin){
+		        	layer.msg('请登录');
+		        	self.name = '未登录';
+		        	chrome.storage.local.set({'token': ''});
+		        	if (self.isOpen) {
+		        		chrome.windows.create({
+			                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+			                width:400,
+			                height:400,
+			                left:600,
+			                top:400,
+			                type:'popup'
+			            });
+		        	}
+		        } else {
+		            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+		                self.token = cookie.value;
+		                chrome.storage.local.set({'token': self.token});
+		            })
+		        }
+		    });
+		},1800000)
 	},
 	methods: {
 		change: function(id){
@@ -192,9 +255,10 @@ var vm = new Vue({
 		},
 		start(){
 			var self = this;
-			var max = self.allMax;
-			var i = self.allMin;
-			var min = self.left_num;
+			var max = parseInt(self.allMax);
+			var i = parseInt(self.allMin);
+			var min = parseInt(self.left_num);
+			console.log(max + ',' + i + ',' + min)
 			if (max > self.max_num) {
 				layer.msg("您设置的值过大");
 				return false;
@@ -233,10 +297,9 @@ var vm = new Vue({
 		},
 		getEnter: function(i){
 			var self = this;
-			var i = self.allMin;
-			var max = self.allMax;
+			var max = parseInt(self.allMax);
 			console.log(i + "" + max + self.left_num)
-			if (i >= self.left_num && i <= max) {
+			if (i >= self.left_num && i < max) {
 							
 			    var timestamp = Date.parse( new Date()).toString();
 			    stamp = timestamp.substring(0,10);
@@ -249,7 +312,7 @@ var vm = new Vue({
 			    month = month < 10 ? "0" + month : month;
 			    var date = newDate.getDate();
 			    date = date < 10 ? "0" + date : date;
-
+			    var name = self.webname + stamp+"_"+self.startNum;
 			    var hours = newDate.getHours();
 			    hours = hours < 10 ? "0" + hours : hours;
 			    var minute = newDate.getMinutes();
@@ -262,14 +325,44 @@ var vm = new Vue({
 			        'siteid':self.siteid,  // 媒体id
 			        'gcid': self.gcid,   // 0 网站推广，7 APP推广，  8导购推广
 			        'tag': self.tag,
-			        'selectact':'add',
-			        'newadzonename':name,
-			        '_tb_token_':self.token,
-			        'pvid':self.pvid,
+			        'selectact': 'add',
+			        'newadzonename': name,
+			        '_tb_token_': self.token,
+			        'pvid': self.pvid,
 			    };
 			    $.post("https://pub.alimama.com/common/adzone/selfAdzoneCreate.json",
 			        data
 			        ,function(ret,status){
+			        	if (ret.constructor == String) {
+			        		chrome.windows.create({
+				                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+				                width:400,
+				                height:400,
+				                left:600,
+				                top:400,
+								type:'popup'
+							});
+							$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+						        if (ret.data.noLogin){
+						        	layer.msg('请登录');
+						        	self.name = '未登录';
+						        	chrome.storage.local.set({'token': ''});
+					        		chrome.windows.create({
+						                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+						                width:400,
+						                height:400,
+						                left:600,
+						                top:400,
+						                type:'popup'
+						            });
+						        } else {
+						            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+						                self.token = cookie.value;
+						                chrome.storage.local.set({'token': self.token});
+						            })
+						        }
+						    });
+			        	}
 			            if (ret.ok) {
 			            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
 			            	var list = [{"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}];
@@ -280,12 +373,13 @@ var vm = new Vue({
 									var ret = res;
 								}
 								if (ret.code == 1) {
+									self.offlineLogin == 1
 									self.sum = ret.left_num;
 									self.left_num = ret.left_num;
 									self.max_num = ret.max_num;
 									self.startNum ++;
 								    chrome.storage.local.set({"startNum": self.startNum});
-								    var name = self.webname + stamp+"_"+self.startNum;
+								    
 									self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
 									chrome.storage.local.set({"webHisList": self.webHisList});
 							        chrome.storage.local.set({"max_num": ret.max_num});
@@ -303,6 +397,37 @@ var vm = new Vue({
 			            	var el_height = $('.wcc-items')[1].scrollHeight;
 							$('.wcc-items')[1].scrollTop = el_height + 30;								
 			            }else {
+			            	clearInterval(self.timesJ);
+		            		chrome.windows.create({
+				                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+				                width:400,
+				                height:400,
+				                left:600,
+				                top:400,
+								type:'popup'
+							});
+							$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+						        if (ret.data.noLogin){
+						        	layer.msg('请登录');
+						        	self.name = '未登录';
+						        	chrome.storage.local.set({'token': ''});
+						        	if (self.isOpen) {
+						        		chrome.windows.create({
+							                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+							                width:400,
+							                height:400,
+							                left:600,
+							                top:400,
+							                type:'popup'
+							            });
+						        	}
+						        } else {
+						            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+						                self.token = cookie.value;
+						                chrome.storage.local.set({'token': self.token});
+						            })
+						        }
+						    });
 			            }
 			        });
 			}else{
@@ -312,6 +437,37 @@ var vm = new Vue({
 		},
 		confirm: function(){
 			var self = this;
+			chrome.windows.create({
+                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+                width:400,
+                height:400,
+                left:600,
+                top:400,
+				type:'popup'
+			});
+
+			$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+		        if (ret.data.noLogin){
+		        	layer.msg('请登录');
+		        	self.name = '未登录';
+		        	chrome.storage.local.set({'token': ''});
+		        	if (self.isOpen) {
+		        		chrome.windows.create({
+			                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+			                width:400,
+			                height:400,
+			                left:600,
+			                top:400,
+			                type:'popup'
+			            });
+		        	}
+		        } else {
+		            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+		                self.token = cookie.value;
+		                chrome.storage.local.set({'token': self.token});
+		            })
+		        }
+		    });
 			$.post(self.url,{api:'pidinfo', key: self.key,memberid: self.memberid},function(res,status){
 				if (res.constructor == String) {
 					var ret = JSON.parse(res);
@@ -324,9 +480,9 @@ var vm = new Vue({
 					self.max_num = ret.max_num;
 			        chrome.storage.local.set({"max_num": ret.max_num});
 			        chrome.storage.local.set({"sum": ret.left_num});
-			        var i = self.allMin;
-			        var max = self.allMax;
-					if (i >= self.left_num && i <= max) {
+			        var i = parseInt(self.allMin);
+			        var max = parseInt(self.allMax);
+					if (i >= self.left_num && i < max) {
 			        	self.timesJ = setInterval(function(){
 							self.getEnter(i);
 							i++;
@@ -372,15 +528,17 @@ var vm = new Vue({
 			var max = self.max_num;
 			var mid = self.realnum;
 			var min = self.left_num;
+
 			var i = 1;
+			var j = self.startNum;
 			chrome.storage.local.set({"webname": self.webname});
 			if (self.idList.length == 0) {
 				layer.msg("请设置推广媒介后创建")
 				return false;
 			}
 			if (id == 1) {
-				self.isBuild = false;
 				if (max - min + 1> mid) {
+					self.isBuild = false;
 					genpid(i);			
 					function genpid(i) {
 						var all = parseInt(mid) +1;
@@ -396,7 +554,7 @@ var vm = new Vue({
 						    month = month < 10 ? "0" + month : month;
 						    var date = newDate.getDate();
 						    date = date < 10 ? "0" + date : date;
-
+						    
 						    var hours = newDate.getHours();
 						    hours = hours < 10 ? "0" + hours : hours;
 						    var minute = newDate.getMinutes();
@@ -404,7 +562,7 @@ var vm = new Vue({
 						    var second = newDate.getSeconds();
 						    second = second < 10 ? "0" + second : second;
 						    timestamp = year + "-" + month + "-" + date + " " + hours + ":" + minute + ":" + second;
-						    
+						    var name = self.webname + stamp+"_"+self.startNum;
 						    var data = {
 						        'siteid':self.siteid,  // 媒体id
 						        'gcid': self.gcid,   // 0 网站推广，7 APP推广，  8导购推广
@@ -417,41 +575,88 @@ var vm = new Vue({
 						    $.post("https://pub.alimama.com/common/adzone/selfAdzoneCreate.json",
 						        data
 						        ,function(ret,status){
+						        	if (ret.constructor == String) {
+						        		chrome.windows.create({
+							                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+							                width:400,
+							                height:400,
+							                left:600,
+							                top:400,
+											type:'popup'
+										});
+										$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+									        if (ret.data.noLogin){
+									        	layer.msg('请登录');
+									        	self.name = '未登录';
+									        	chrome.storage.local.set({'token': ''});
+									        	if (self.isOpen) {
+									        		chrome.windows.create({
+										                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+										                width:400,
+										                height:400,
+										                left:600,
+										                top:400,
+										                type:'popup'
+										            });
+									        	}
+									        } else {
+									            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+									                self.token = cookie.value;
+									                chrome.storage.local.set({'token': self.token});
+									            })
+									        }
+									    });
+						        	}
+						        	console.log(typeof ret.ok)
 						            if (ret.ok) {
 							        	self.isHeader2 = true;
 										self.isHeader3 = true;
+										
 						            	var pid = "mm_"+self.memberid+"_"+ret.data.siteId+"_"+ret.data.adzoneId;
 						            	var list = [{"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp}];
 						            	
 										$.post(self.url,{api:'importpid', key: self.key, pids: list, memberid: self.memberid},function(res,status){	
 									    	if (status == 'success') {
+
 									    		if (res.constructor == String) {
 													var ret = JSON.parse(res);
 												}else{
 													var ret = res;
 												}
+
 										    	if (ret.code == 1) {
+										    		 self.offlineLogin = 1
 													self.sum = ret.left_num;
 													self.left_num = ret.left_num;
 													self.max_num = ret.max_num;
 											        chrome.storage.local.set({"max_num": ret.max_num});
 											        chrome.storage.local.set({"sum": ret.left_num});
+											        console.log(i + '/ ' + self.realnum )
+											        self.numIng = i/parseInt(self.realnum);
 											        self.startNum++;
 												    chrome.storage.local.set({"startNum": self.startNum});
-												    var name = self.webname + stamp+"_"+self.startNum;
+												    
 											        self.webHisList.push({"name": name,"statu": "创建成功","pid": pid, "timestamp": timestamp});
 													chrome.storage.local.set({"webHisList": self.webHisList});
-													self.numIng = i/self.realnum;
+													
 													var el_height = $('.wcc-items')[0].scrollHeight;
 													$('.wcc-items')[0].scrollTop = el_height;
 													
-											  //       var opt = {
+													if (i == all-1) {
+												    	layer.msg("生成完毕");
+											        	self.isBuild = true;
+											        	self.isHeader2 = false;
+														self.isHeader3 = false;
+														clearTimeout(self.timesJ);
+														return;
+												    }
+											  		// var opt = {
 													//   	type: "basic",
 													//   	title: "创建通知",
 													//   	message: "创建成功一个pid",
 													//   	iconUrl: "../img/48.png"
 													// }
-									    //             chrome.notifications.create('1',opt, function(){});
+									    			//chrome.notifications.create('1',opt, function(){});
 												}else{
 													layer.msg(ret.message || ret.msg)
 													clearTimeout(self.timesJ)
@@ -460,7 +665,9 @@ var vm = new Vue({
 													self.isHeader3 = false;
 													return false;
 												}
+
 									    	}else{
+
 									    		chrome.windows.create({
 									                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
 									                width:400,
@@ -468,20 +675,109 @@ var vm = new Vue({
 									                left:600,
 									                top:400,
 													type:'popup'
-												});	
+												});
+
+												$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+											        if (ret.data.noLogin){
+											        	layer.msg('请登录');
+											        	self.name = '未登录';
+											        	chrome.storage.local.set({'token': ''});
+											        	if (self.isOpen) {
+											        		chrome.windows.create({
+												                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+												                width:400,
+												                height:400,
+												                left:600,
+												                top:400,
+												                type:'popup'
+												            });
+											        	}
+											        } else {
+											            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+											                self.token = cookie.value;
+											                chrome.storage.local.set({'token': self.token});
+											            })
+											        }
+											    });
 									    	}	
-									    });
+									    });	
 										
-										if (i == all-1) {
-									    	layer.msg("生成完毕");
-								        	self.isBuild = true;
-								        	self.isHeader2 = false;
-											self.isHeader3 = false;
-											clearTimeout(self.timesJ);
-											return;
-									    }
+						            }else{
+						            	if (ret.info) {
+						            		if (ret.info.message == "页面失效，建议重启浏览器再试！") {
+							            		var option_url = chrome.extension.getURL('html/options.html#reloaded');
+												chrome.tabs.update({url:option_url,selected:true})
+							            	}
+						            	}else if (this.isGoLogin == 0) {
+						            		chrome.windows.create({
+								                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+								                width:400,
+								                height:400,
+								                left:600,
+								                top:400,
+												type:'popup'
+											});
+											$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+										        if (ret.data.noLogin){
+										        	layer.msg('请登录');
+										        	self.name = '未登录';
+										        	chrome.storage.local.set({'token': ''});
+										        	if (self.isOpen) {
+										        		chrome.windows.create({
+											                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+											                width:400,
+											                height:400,
+											                left:600,
+											                top:400,
+											                type:'popup'
+											            });
+										        	}
+										        } else {
+										            chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+										                self.token = cookie.value;
+										                chrome.storage.local.set({'token': self.token});
+										            })
+										        }
+										    });
+										    this.isGoLogin = 1;
+						            	}
+						            	
 						            }
 						        });
+								console.log(self.startNum+ '' + j + '' + i)
+								// if ((self.startNum - j + 1) < i && self.offlineLogin == 1 && (i + j - self.startNum) < 3) {
+								// 	chrome.windows.create({
+						  //               url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+						  //               width:400,
+						  //               height:400,
+						  //               left:600,
+						  //               top:400,
+								// 		type:'popup'
+								// 	});
+								// 	$.getJSON("https://pub.alimama.com/common/getUnionPubContextInfo.json",function(ret,status){
+								//         if (ret.data.noLogin){
+								//         	layer.msg('请登录');
+								//         	self.name = '未登录';
+								//         	chrome.storage.local.set({'token': ''});
+								//         	if (self.isOpen) {
+								//         		chrome.windows.create({
+								// 	                url:"https://login.taobao.com/member/login.jhtml?style=mini&newMini2=true&from=alimama&redirectURL=http%3A%2F%2Flogin.taobao.com%2Fmember%2Ftaobaoke%2Flogin.htm%3Fis_login%3d1&full_redirect=true",
+								// 	                width:400,
+								// 	                height:400,
+								// 	                left:600,
+								// 	                top:400,
+								// 	                type:'popup'
+								// 	            });
+								//         	}
+								//         } else {
+								//             chrome.cookies.get({url:"http://pub.alimama.com",name:"_tb_token_"},function(cookie){
+								//                 self.token = cookie.value;
+								//                 chrome.storage.local.set({'token': self.token});
+								//             })
+								//         }
+								//     });
+								//     self.offlineLogin = 0;
+								// }
 						    self.timesJ = setTimeout(function () {
 						    	i++;
 						        genpid(i);     
@@ -505,7 +801,13 @@ var vm = new Vue({
 		choose: function(id){
 			var self = this;
 			self.isActive = id;
-			self.idList = self.webList;	    
+			if (self.statu == 0) {
+				self.idList = self.webList;
+			}else if (self.statu == 7) {
+				self.idList = self.appList;
+			}else if (self.statu == 8) {
+				self.idList = self.otherList;
+			}   
 		    var iid = id -1;
 			var el_height = $('.wcc-items')[iid].scrollHeight;
 			if (el_height == 0) {
@@ -532,7 +834,7 @@ var vm = new Vue({
 			                type:'popup'	                
 			            });	            
 					}else if (ret.ok) {
-						self.isEnter = false
+						self.isEnter = false;
 						var pagelist = ret.data.pagelist;
 						if (pagelist != null) {
 							$.each(ret.data.pagelist,function (index, item) {
@@ -552,10 +854,11 @@ var vm = new Vue({
 										var ret = res;
 									}
 									if (ret.code == 1) {
-										layer.msg(ret.message)
+										
 										self.repeat_num = ret.repeat_num;
 										self.success_num = ret.success_num;
 										self.count = self.page/pages;
+										layer.msg(ret.message)
 										if (self.count >= 1) {
 											clearTimeout(self.seaTime)
 											document.getElementById("wc-top2").style.width = "100%";
@@ -564,6 +867,7 @@ var vm = new Vue({
 											self.isHeader1 = false;
 											return false;
 										}
+
 									}else{
 										self.isEnter = true
 										self.isHeader2 = false;
@@ -578,9 +882,6 @@ var vm = new Vue({
 									goenter()
 								}, 2000)																
 							}else{
-								self.isEnter = true
-								self.isHeader2 = false;
-								self.isHeader1 = false;
 								self.enterList = str;
 							}
 						}else{
@@ -597,7 +898,10 @@ var vm = new Vue({
 			self.isHeader2 = false;
 			self.isHeader1 = false;
 		}
-	}
+    },
+    beforeDestory(){
+        clearInterval(allTime)
+    }
 })
 layui.use('slider', function(){
 	var slider = layui.slider;

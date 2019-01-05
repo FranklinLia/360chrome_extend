@@ -13,6 +13,7 @@
 	<!-- <script type="text/javascript" src="../js/muse-ui.js"></script> -->
 	<script type="text/javascript" src="../js/layer.js"></script>
 	<script type="text/javascript" src="../js/background.js"></script>
+	<script type="text/javascript" src="../js/content_script.js"></script>
 	<!-- <script src="https://unpkg.com/mint-ui/lib/index.js"></script> -->
 	<link rel="stylesheet" href="../css/layui.css">
 	<link rel="stylesheet" href="../css/layer.css">
@@ -379,7 +380,7 @@
 	</style>
 </head>
 <body>
-	<div class="options-container" id="container">
+	<div class="options-container" id="container"  v-cloak>
 		<div class="slider">
 			<img src="../img/logo.png" />
 		</div>
@@ -524,11 +525,11 @@
 					<li class="wc-item auto">
 						<div class="wc-left">
 							<span>pid数量低于此值自动创建：</span>
-							<input type="text" placeholder="1" v-model.trim="allMin">
+							<input type="text" placeholder="1" v-model.number="allMin">
 						</div>
 						<div class="wc-right">
 							<span>创建pid数量高于此值自动停止<label>(不能超过{{max_num || 0}})</label>：</span>
-							<input type="text" placeholder="5000" v-model.trim="allMax">
+							<input type="text" placeholder="5000" v-model.number="allMax">
 						</div>						
 					</li>
 					<li class="wc-item" style="line-height: 14px;">
